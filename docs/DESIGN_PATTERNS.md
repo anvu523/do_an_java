@@ -1,22 +1,56 @@
-# Design Patterns đã sử dụng
+# Design Patterns trong BrewPoint POS
 
-| Pattern | Vị trí | Cách áp dụng |
-|---|---|---|
-| MVC Pattern | `model/`, `view/`, `controller/` | Entity nằm trong `model`, Swing UI nằm trong `view`, controller nhận yêu cầu từ UI và gọi service. |
-| DAO Pattern | `dao/ProductDAO.java`, `CategoryDAO.java`, `EmployeeDAO.java`, `OrderDAO.java`, `StatisticDAO.java`, `UserDAO.java` | Mỗi bảng hoặc nhóm nghiệp vụ database có DAO riêng, dùng `PreparedStatement` để CRUD/search/filter. |
-| Singleton Pattern | `database/DatabaseConnection.java` | Cung cấp `DatabaseConnection.getInstance().getConnection()` để quản lý cấu hình và kết nối database tập trung. |
-| Factory Pattern | `factory/UserFactory.java` | Tạo `User` theo role, username, password hash và trạng thái khi thêm nhân viên. |
+## MVC / Layered MVC
 
-## Phân tách tầng
+- `view`: Swing frame/panel/dialog, chỉ hiển thị và thu input.
+- `controller`: API mỏng cho view gọi.
+- `service`: validation, phân quyền nghiệp vụ, pricing và transaction.
+- `dao`: SQL, `PreparedStatement`, mapping `ResultSet`.
+- `model`: entity, enum và DTO.
 
-- `view`: chỉ dựng giao diện, đọc input, hiển thị thông báo.
-- `controller`: API mỏng cho Swing gọi.
-- `service`: validation và nghiệp vụ như login, checkout, kiểm tra giỏ hàng.
-- `dao`: SQL, transaction, mapping `ResultSet` sang model.
-- `database`: cấu hình/kết nối MySQL.
+Luồng chính:
 
-## Điểm nghiệp vụ quan trọng
+```text
+Swing View -> Controller -> Service -> DAO -> JDBC/MySQL
+```
 
-- `OrderDAO.insert()` lưu `orders`, `order_details` và trừ tồn kho trong cùng transaction.
-- `SalePanel` chặn bán vượt tồn kho ngay trên giao diện, `OrderDAO` vẫn kiểm tra lại bằng SQL để tránh sai lệch dữ liệu.
-- `EmployeeDAO` tạo/cập nhật `users` và `employees` trong cùng transaction.
+## DAO
+
+Các DAO chính:
+
+- `ProductDAO`, `ProductSizeDAO`, `ToppingDAO`.
+- `OrderDAO` lưu order header, item snapshot và topping snapshot.
+- `EmployeeDAO`, `UserDAO`, `CategoryDAO`, `StatisticDAO`.
+
+DAO không hiển thị UI và không tự quyết định nghiệp vụ; service truyền `Connection` cho các thao tác cần transaction.
+
+## Singleton
+
+`DatabaseManager.getInstance()` là singleton quản lý cấu hình database và tạo connection mới cho mỗi operation.
+
+Điểm quan trọng: singleton không giữ một `Connection` global, tránh lỗi connection bị đóng hoặc bị dùng chung sai transaction.
+
+## Strategy + Factory
+
+`PaymentStrategy` có hai triển khai:
+
+- `CashPaymentStrategy`: kiểm tra tiền khách đưa đủ và tính tiền thừa.
+- `ManualBankTransferStrategy`: bắt buộc xác nhận đã nhận tiền.
+
+`PaymentStrategyFactory` chọn strategy từ `PaymentMethod`.
+
+## Decorator
+
+Decorator được dùng cho topping:
+
+```text
+BaseDrink: Ô long sữa size L 49.000 ₫
+ToppingDecorator: Trân châu đen +10.000 ₫
+ToppingDecorator: Pudding trứng +8.000 ₫
+Đơn giá: 67.000 ₫
+Số lượng 2: 134.000 ₫
+```
+
+Thiết kế dùng một `ToppingDecorator` data-driven, không tạo class riêng như `PearlDecorator` hay `PuddingDecorator`.
+
+Checkout không tin giá từ UI. `CheckoutService` reload product, size, topping từ database, dựng lại Decorator chain, tính tổng, chạy payment strategy và lưu snapshot trong một transaction.

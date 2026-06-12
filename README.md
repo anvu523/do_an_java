@@ -1,116 +1,61 @@
-# Phần mềm quản lý cửa hàng bán đồ uống
+# BrewPoint POS
 
-Project desktop Java Swing + MySQL theo MVC, DAO, Singleton database connection và Factory đơn giản.
+Ứng dụng POS desktop cho quán cà phê và trà sữa tại Việt Nam, viết bằng Java Swing, JDBC, MySQL và Maven.
 
-## Công nghệ
+## Quyết định kỹ thuật
 
-- Java 17+
-- Java Swing
-- MySQL 8+
-- Maven
-- MySQL Connector/J: khai báo trong `pom.xml`
+| Hạng mục | Giá trị |
+|---|---|
+| Artifact | `brewpoint-pos` |
+| Package | `com.brewpoint.pos` |
+| JDK | 17 |
+| Phong cách source | Java Core 8 style |
+| UI | Java Swing, mở maximized |
+| Database | MySQL 8.x, `brewpoint_pos` |
+| Tiền tệ | VND, `BigDecimal`, hiển thị `39.000 ₫` |
 
-## Cấu trúc
+Không dùng `record`, sealed class, pattern matching, text block, `var`, module system, `List.of`, `Map.of` hoặc `Stream.toList`.
 
-```text
-src/main/java/com/drinkstore/
-├── model/
-├── view/
-├── controller/
-├── dao/
-├── service/
-├── database/
-├── factory/
-├── util/
-└── main/
-```
-
-## Cấu hình database
-
-1. Tạo database và dữ liệu mẫu:
+## Khởi tạo database
 
 ```powershell
 mysql -u root -p < database/drink_store.sql
 ```
 
-Nếu terminal chưa nhận PATH sau khi cài MySQL bằng winget, dùng script có sẵn:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/import-database.ps1
-```
-
-Script này tự start MySQL user-mode tại `127.0.0.1:3306` với `root` không mật khẩu, đúng với cấu hình demo trong `config/database.properties`.
-
-Dừng MySQL user-mode:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/stop-mysql.ps1
-```
-
-2. Sửa cấu hình nếu cần tại:
-
-```text
-config/database.properties
-```
-
-Mặc định:
-
-```properties
-db.url=jdbc:mysql://localhost:3306/drink_store?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh&useUnicode=true&characterEncoding=UTF-8
-db.username=root
-db.password=
-```
+File SQL tạo database `brewpoint_pos`, schema size/topping/order snapshot và seed menu tiếng Việt.
 
 ## Chạy chương trình
 
-Cách chạy trực tiếp bằng JDK, không cần Maven:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/run-javac.ps1
-```
-
-Script này tự start MySQL, tải MySQL Connector/J vào `lib/`, compile source vào `out/`, rồi mở giao diện Swing.
-
-Cách khuyến nghị:
-
 ```powershell
 mvn clean package
-java -jar target/drink-store-manager-1.0.0.jar
+java -jar target/brewpoint-pos-1.0.0.jar
 ```
 
-Hoặc chạy script:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/run-maven.ps1
-```
-
-Nếu chỉ cần kiểm tra compile bằng JDK:
+Nếu không có Maven trong PATH, có thể compile trực tiếp bằng script:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/compile-javac.ps1
 ```
-
-Lưu ý: chạy app thực tế cần MySQL server đang chạy và MySQL Connector/J trong classpath; Maven tự xử lý phần Connector/J.
 
 ## Tài khoản mẫu
 
 | Vai trò | Tên đăng nhập | Mật khẩu |
 |---|---|---|
 | Admin | `admin` | `admin123` |
-| Nhân viên | `nhanvien` | `nv123` |
+| Cashier | `cashier` | `cashier123` |
 
-## Chức năng chính
+## Chức năng đã triển khai
 
-- Đăng nhập và phân quyền Admin/Nhân viên.
-- CRUD sản phẩm, loại sản phẩm, nhân viên.
-- Bán hàng, giỏ hàng, tính tổng tiền, lưu hóa đơn, trừ tồn kho trong transaction.
-- Xem hóa đơn, xem chi tiết, lọc theo mã, ngày, nhân viên.
-- Thống kê doanh thu ngày, tháng, số hóa đơn, sản phẩm bán chạy.
+- Đăng nhập, đăng xuất và phân quyền Admin/Cashier.
+- CRUD danh mục, sản phẩm có ảnh, size, topping, nhân viên/tài khoản.
+- POS toàn màn hình với filter danh mục, tìm kiếm, product card có ảnh/placeholder.
+- Chọn size, nhiều topping, số lượng, ghi chú và gộp giỏ theo cấu hình.
+- Decorator Pattern tính đơn giá topping bằng một `ToppingDecorator` data-driven.
+- Thanh toán tiền mặt hoặc chuyển khoản xác nhận thủ công bằng Strategy/Factory.
+- Checkout tính lại giá từ database, lưu snapshot và trừ tồn kho trong transaction.
+- Cashier chỉ xem hóa đơn của mình; Admin xem tất cả hóa đơn và thống kê.
 
-## Design Patterns
+## Tài liệu
 
-Chi tiết nằm tại `docs/DESIGN_PATTERNS.md`.
-
-## Báo cáo test
-
-Báo cáo nằm tại `docs/TEST_REPORT.md`.
+- `docs/DESIGN_PATTERNS.md`: giải thích MVC, DAO, Singleton, Strategy, Factory, Decorator.
+- `docs/TEST_REPORT.md`: checklist kiểm thử build, DB, ảnh, VND, Decorator, checkout và phân quyền.

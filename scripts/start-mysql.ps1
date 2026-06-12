@@ -1,4 +1,5 @@
 $ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $false
 
 $mysqlBaseCandidates = @(
     "C:\Program Files\MySQL\MySQL Server 8.4",
