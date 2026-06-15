@@ -12,9 +12,15 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CatalogController {
-    private final CategoryService categoryService = new CategoryService();
-    private final ProductService productService = new ProductService();
-    private final ToppingService toppingService = new ToppingService();
+    private final CategoryService categoryService ;
+    private final ProductService productService ;
+    private final ToppingService toppingService ;
+
+    public CatalogController(CategoryService categoryService, ProductService productService, ToppingService toppingService) {
+        this.categoryService = categoryService;
+        this.productService = productService;
+        this.toppingService = toppingService;
+    }
 
     public List<Category> findCategories(boolean activeOnly) throws SQLException {
         return categoryService.findAll(activeOnly);

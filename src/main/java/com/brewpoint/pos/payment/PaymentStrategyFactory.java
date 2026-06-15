@@ -1,9 +1,9 @@
-package com.brewpoint.pos.factory;
+package com.brewpoint.pos.payment;
 
 import com.brewpoint.pos.model.PaymentMethod;
-import com.brewpoint.pos.strategy.CashPaymentStrategy;
-import com.brewpoint.pos.strategy.ManualBankTransferStrategy;
-import com.brewpoint.pos.strategy.PaymentStrategy;
+import com.brewpoint.pos.payment.CashPaymentStrategy;
+import com.brewpoint.pos.payment.ManualBankTransferStrategy;
+import com.brewpoint.pos.payment.PaymentStrategy;
 import com.brewpoint.pos.util.ValidationException;
 
 public final class PaymentStrategyFactory {

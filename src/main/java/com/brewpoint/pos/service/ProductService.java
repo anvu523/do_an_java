@@ -12,8 +12,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class ProductService {
-    private final ProductDAO productDAO = new ProductDAO();
-    private final ProductSizeDAO sizeDAO = new ProductSizeDAO();
+    private final ProductDAO productDAO ;
+    private final ProductSizeDAO sizeDAO ;
+
+    public ProductService(ProductDAO productDAO, ProductSizeDAO sizeDAO) {
+        this.productDAO = productDAO;
+        this.sizeDAO = sizeDAO;
+    }
 
     public List<Product> search(String keyword, Integer categoryId, boolean activeOnly) throws SQLException {
         return productDAO.search(keyword, categoryId, activeOnly);

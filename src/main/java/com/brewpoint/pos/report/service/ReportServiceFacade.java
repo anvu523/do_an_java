@@ -7,11 +7,19 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class ReportServiceFacade {
-    private final ReceiptReportService receiptReportService = new ReceiptReportService();
-    private final DailyRevenueReportService dailyRevenueReportService = new DailyRevenueReportService();
-    private final MonthlyRevenueReportService monthlyRevenueReportService = new MonthlyRevenueReportService();
-    private final BestSellingProductsReportService bestSellingProductsReportService = new BestSellingProductsReportService();
-    private final CashierPerformanceReportService cashierPerformanceReportService = new CashierPerformanceReportService();
+    private final ReceiptReportService receiptReportService ;
+    private final DailyRevenueReportService dailyRevenueReportService ;
+    private final MonthlyRevenueReportService monthlyRevenueReportService ;
+    private final BestSellingProductsReportService bestSellingProductsReportService ;
+    private final CashierPerformanceReportService cashierPerformanceReportService ;
+
+    public ReportServiceFacade(ReceiptReportService receiptReportService, DailyRevenueReportService dailyRevenueReportService, MonthlyRevenueReportService monthlyRevenueReportService, BestSellingProductsReportService bestSellingProductsReportService, CashierPerformanceReportService cashierPerformanceReportService) {
+        this.receiptReportService = receiptReportService;
+        this.dailyRevenueReportService = dailyRevenueReportService;
+        this.monthlyRevenueReportService = monthlyRevenueReportService;
+        this.bestSellingProductsReportService = bestSellingProductsReportService;
+        this.cashierPerformanceReportService = cashierPerformanceReportService;
+    }
 
     public JasperPrint receipt(long orderId) throws SQLException, JRException {
         return receiptReportService.build(orderId);

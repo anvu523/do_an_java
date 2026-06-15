@@ -7,7 +7,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class EmployeeController {
-    private final EmployeeService employeeService = new EmployeeService();
+    private final EmployeeService employeeService ;
+
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
 
     public List<Employee> findAll() throws SQLException {
         return employeeService.findAll();

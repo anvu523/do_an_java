@@ -25,7 +25,7 @@ import java.time.temporal.TemporalAdjusters;
 public class ReportsPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    private final transient ReportController controller = new ReportController();
+    private final transient ReportController controller = com.brewpoint.pos.DependencyContainer.getInstance().getReportController();
     private final JComboBox<String> reportTypeCombo = new JComboBox<String>(new String[]{
             "Doanh thu",
             "Sản phẩm bán chạy",

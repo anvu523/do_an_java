@@ -9,7 +9,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class ToppingService {
-    private final ToppingDAO toppingDAO = new ToppingDAO();
+    private final ToppingDAO toppingDAO ;
+
+    public ToppingService(ToppingDAO toppingDAO) {
+        this.toppingDAO = toppingDAO;
+    }
 
     public List<Topping> findAll(boolean activeOnly) throws SQLException {
         return toppingDAO.findAll(activeOnly);

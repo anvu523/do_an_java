@@ -27,7 +27,7 @@ public class OrderDetailDialog extends JDialog {
     private static final long serialVersionUID = 1L;
 
     private final long orderId;
-    private final transient ReportController reportController = new ReportController();
+    private final transient ReportController reportController = com.brewpoint.pos.DependencyContainer.getInstance().getReportController();
     private final DefaultTableModel model = new DefaultTableModel(
             new Object[]{"Món", "Cỡ ly", "Topping", "Ghi chú", "SL", "Đơn giá", "Thành tiền"}, 0) {
         private static final long serialVersionUID = 1L;

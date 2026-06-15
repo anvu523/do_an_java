@@ -9,7 +9,11 @@ import com.brewpoint.pos.service.CheckoutService;
 import java.sql.SQLException;
 
 public class CheckoutController {
-    private final CheckoutService checkoutService = new CheckoutService();
+    private final CheckoutService checkoutService ;
+
+    public CheckoutController(CheckoutService checkoutService) {
+        this.checkoutService = checkoutService;
+    }
 
     public CartLine previewLine(CartLineRequest request) throws SQLException {
         return checkoutService.previewLine(request);

@@ -23,7 +23,7 @@ import java.util.List;
 public class EmployeeManagementPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    private final transient EmployeeController controller = new EmployeeController();
+    private final transient EmployeeController controller = com.brewpoint.pos.DependencyContainer.getInstance().getEmployeeController();
     private final int currentUserId;
     private final DefaultTableModel model = new DefaultTableModel(
             new Object[]{"Mã NV", "Tên đăng nhập", "Họ tên", "Vai trò", "Điện thoại", "Email", "Trạng thái"}, 0) {

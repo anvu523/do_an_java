@@ -22,7 +22,7 @@ import java.util.List;
 public class CategoryManagementPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    private final transient CatalogController controller = new CatalogController();
+    private final transient CatalogController controller = com.brewpoint.pos.DependencyContainer.getInstance().getCatalogController();
     private final DefaultTableModel model = new DefaultTableModel(new Object[]{"Mã", "Tên", "Thứ tự hiển thị", "Trạng thái"}, 0) {
         private static final long serialVersionUID = 1L;
 

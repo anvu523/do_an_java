@@ -9,7 +9,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class StatisticController {
-    private final StatisticService statisticService = new StatisticService();
+    private final StatisticService statisticService ;
+
+    public StatisticController(StatisticService statisticService) {
+        this.statisticService = statisticService;
+    }
 
     public StatisticSummary summary(LocalDate selectedDate, Integer employeeId) throws SQLException {
         return statisticService.summary(selectedDate, employeeId);

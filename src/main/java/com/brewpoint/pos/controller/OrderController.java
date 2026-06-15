@@ -9,7 +9,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class OrderController {
-    private final OrderService orderService = new OrderService();
+    private final OrderService orderService ;
+
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     public List<OrderSummary> search(String orderCode, LocalDate date, Integer employeeId) throws SQLException {
         return orderService.search(orderCode, date, employeeId);

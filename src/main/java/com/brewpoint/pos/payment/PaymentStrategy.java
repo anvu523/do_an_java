@@ -1,4 +1,4 @@
-package com.brewpoint.pos.strategy;
+package com.brewpoint.pos.payment;
 
 import com.brewpoint.pos.model.PaymentInput;
 import java.math.BigDecimal;

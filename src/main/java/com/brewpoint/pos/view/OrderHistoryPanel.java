@@ -27,8 +27,8 @@ import java.util.List;
 public class OrderHistoryPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    private final transient OrderController controller = new OrderController();
-    private final transient EmployeeController employeeController = new EmployeeController();
+    private final transient OrderController controller = com.brewpoint.pos.DependencyContainer.getInstance().getOrderController();
+    private final transient EmployeeController employeeController = com.brewpoint.pos.DependencyContainer.getInstance().getEmployeeController();
     private final boolean admin;
     private final Integer employeeId;
     private final JTextField codeField = new JTextField(14);

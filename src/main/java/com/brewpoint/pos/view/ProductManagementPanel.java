@@ -30,7 +30,7 @@ import java.util.List;
 public class ProductManagementPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    private final transient CatalogController controller = new CatalogController();
+    private final transient CatalogController controller = com.brewpoint.pos.DependencyContainer.getInstance().getCatalogController();
     private final transient ImageService imageService = new ImageService();
     private final DefaultTableModel model = new DefaultTableModel(
             new Object[]{"Mã món", "Tên", "Danh mục", "Giá thấp nhất", "Tồn kho", "Trạng thái"}, 0) {

@@ -1,4 +1,4 @@
-package com.brewpoint.pos.decorator;
+package com.brewpoint.pos.pricing;
 
 public abstract class DrinkDecorator implements DrinkComponent {
     protected final DrinkComponent wrapped;

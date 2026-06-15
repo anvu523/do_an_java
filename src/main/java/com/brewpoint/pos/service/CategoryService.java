@@ -9,7 +9,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CategoryService {
-    private final CategoryDAO categoryDAO = new CategoryDAO();
+    private final CategoryDAO categoryDAO ;
+
+    public CategoryService(CategoryDAO categoryDAO) {
+        this.categoryDAO = categoryDAO;
+    }
 
     public List<Category> findAll(boolean activeOnly) throws SQLException {
         return categoryDAO.findAll(activeOnly);

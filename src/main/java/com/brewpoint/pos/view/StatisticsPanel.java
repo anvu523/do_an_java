@@ -26,7 +26,7 @@ import java.util.List;
 public class StatisticsPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    private final transient StatisticController controller = new StatisticController();
+    private final transient StatisticController controller = com.brewpoint.pos.DependencyContainer.getInstance().getStatisticController();
     private final boolean admin;
     private final Integer employeeId;
     private final JTextField dateField = new JTextField(DateUtils.format(LocalDate.now()), 12);

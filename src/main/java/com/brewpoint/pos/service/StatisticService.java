@@ -9,7 +9,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class StatisticService {
-    private final StatisticDAO statisticDAO = new StatisticDAO();
+    private final StatisticDAO statisticDAO ;
+
+    public StatisticService(StatisticDAO statisticDAO) {
+        this.statisticDAO = statisticDAO;
+    }
 
     public StatisticSummary summary(LocalDate selectedDate, Integer employeeId) throws SQLException {
         return statisticDAO.summary(selectedDate, employeeId);

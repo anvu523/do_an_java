@@ -1,7 +1,5 @@
 package com.brewpoint.pos.view;
 
-
-
 import com.brewpoint.pos.controller.CatalogController;
 
 import com.brewpoint.pos.controller.CheckoutController;
@@ -33,8 +31,6 @@ import com.brewpoint.pos.util.UIConstants;
 import com.brewpoint.pos.util.UiUtils;
 
 import com.brewpoint.pos.util.ValidationException;
-
-
 
 import javax.swing.BorderFactory;
 
@@ -100,8 +96,6 @@ import java.util.ArrayList;
 
 import java.util.List;
 
-
-
 public class PosPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
@@ -110,13 +104,11 @@ public class PosPanel extends JPanel {
 
     private static final int[] CART_MIN_COLUMN_WIDTHS = new int[]{90, 150, 40, 95, 105};
 
+    private final transient CatalogController catalogController = com.brewpoint.pos.DependencyContainer.getInstance().getCatalogController();
 
+    private final transient CheckoutController checkoutController = com.brewpoint.pos.DependencyContainer.getInstance().getCheckoutController();
 
-    private final transient CatalogController catalogController = new CatalogController();
-
-    private final transient CheckoutController checkoutController = new CheckoutController();
-
-    private final transient ReportController reportController = new ReportController();
+    private final transient ReportController reportController = com.brewpoint.pos.DependencyContainer.getInstance().getReportController();
 
     private final transient ImageService imageService = new ImageService();
 
@@ -137,8 +129,6 @@ public class PosPanel extends JPanel {
     private final DefaultTableModel cartModel = new DefaultTableModel(CART_HEADERS, 0) {
 
         private static final long serialVersionUID = 1L;
-
-
 
         public boolean isCellEditable(int row, int column) {
 
@@ -167,8 +157,6 @@ public class PosPanel extends JPanel {
     private boolean processingCheckout;
 
     private boolean optionDialogOpen;
-
-
 
     public PosPanel(Integer employeeId) {
 
@@ -240,8 +228,6 @@ public class PosPanel extends JPanel {
 
     }
 
-
-
     private JPanel buildCatalogPanel() {
 
         JPanel panel = new JPanel(new BorderLayout(UIConstants.SPACING_SM, UIConstants.SPACING_SM));
@@ -251,8 +237,6 @@ public class PosPanel extends JPanel {
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, UIConstants.SPACING_SM));
 
         panel.setMinimumSize(new Dimension(360, 0));
-
-
 
         JPanel top = new JPanel();
 
@@ -311,8 +295,6 @@ public class PosPanel extends JPanel {
 
         panel.add(top, BorderLayout.NORTH);
 
-
-
         productGrid.setBackground(UIConstants.BG_APP);
 
         productScrollPane.setBorder(BorderFactory.createLineBorder(UIConstants.BORDER));
@@ -328,8 +310,6 @@ public class PosPanel extends JPanel {
         return panel;
 
     }
-
-
 
     private JPanel buildCartPanel() {
 
@@ -379,8 +359,6 @@ public class PosPanel extends JPanel {
 
         panel.add(cartScroll, BorderLayout.CENTER);
 
-
-
         JPanel bottom = new JPanel(new BorderLayout(UIConstants.SPACING_SM, UIConstants.SPACING_SM));
 
         bottom.setOpaque(false);
@@ -390,8 +368,6 @@ public class PosPanel extends JPanel {
                 UIConstants.SPACING_SM, UIConstants.SPACING_SM));
 
         bottom.add(buildCartTotalsPanel(), BorderLayout.NORTH);
-
-
 
         JPanel buttons = new JPanel(new GridLayout(1, 3, UIConstants.SPACING_SM, 0));
 
@@ -423,8 +399,6 @@ public class PosPanel extends JPanel {
 
     }
 
-
-
     private JPanel buildCartTotalsPanel() {
 
         JPanel totals = new JPanel();
@@ -452,8 +426,6 @@ public class PosPanel extends JPanel {
         return totals;
 
     }
-
-
 
     private JPanel buildTotalRow(String caption, JLabel valueLabel, boolean emphasize) {
 
@@ -491,8 +463,6 @@ public class PosPanel extends JPanel {
 
     }
 
-
-
     private int measureRequiredCartWidth() {
 
         int tableWidth = UiUtils.requiredTableWidth(cartTable, CART_HEADERS, CART_MIN_COLUMN_WIDTHS, 24);
@@ -500,8 +470,6 @@ public class PosPanel extends JPanel {
         return tableWidth + 36;
 
     }
-
-
 
     private void initializeSplitDivider() {
 
@@ -527,8 +495,6 @@ public class PosPanel extends JPanel {
 
     }
 
-
-
     private void loadCategories() {
 
         try {
@@ -553,15 +519,11 @@ public class PosPanel extends JPanel {
 
     }
 
-
-
     private void loadProducts() {
 
         loadProducts(true);
 
     }
-
-
 
     private void loadProducts(boolean showLoading) {
 
@@ -599,8 +561,6 @@ public class PosPanel extends JPanel {
 
             }
 
-
-
             protected void done() {
 
                 try {
@@ -620,8 +580,6 @@ public class PosPanel extends JPanel {
         worker.execute();
 
     }
-
-
 
     private void fillProducts(List<Product> products) {
 
@@ -679,8 +637,6 @@ public class PosPanel extends JPanel {
 
     }
 
-
-
     private void clearCardSelection() {
 
         for (int i = 0; i < productCards.size(); i++) {
@@ -690,8 +646,6 @@ public class PosPanel extends JPanel {
         }
 
     }
-
-
 
     private void relayoutProductGrid() {
 
@@ -719,8 +673,6 @@ public class PosPanel extends JPanel {
 
         int cardHeight = imageHeight + 112;
 
-
-
         for (int i = 0; i < productCards.size(); i++) {
 
             productCards.get(i).setCardSize(cardWidth, cardHeight, imageWidth, imageHeight);
@@ -736,8 +688,6 @@ public class PosPanel extends JPanel {
         productScrollPane.repaint();
 
     }
-
-
 
     private void openOptionDialog(Product product) {
 
@@ -789,8 +739,6 @@ public class PosPanel extends JPanel {
 
     }
 
-
-
     private int quantityInCart(int productId) {
 
         int quantity = 0;
@@ -808,8 +756,6 @@ public class PosPanel extends JPanel {
         return quantity;
 
     }
-
-
 
     private int quantityInCartExcept(int productId, int excludeIndex) {
 
@@ -837,8 +783,6 @@ public class PosPanel extends JPanel {
 
     }
 
-
-
     private void addToCart(CartLine newLine) {
 
         cartLines.add(newLine);
@@ -846,8 +790,6 @@ public class PosPanel extends JPanel {
         fillCart();
 
     }
-
-
 
     private void fillCart() {
 
@@ -889,8 +831,6 @@ public class PosPanel extends JPanel {
 
     }
 
-
-
     private String optionsText(CartLine line) {
 
         StringBuilder builder = new StringBuilder(line.getSizeName());
@@ -927,8 +867,6 @@ public class PosPanel extends JPanel {
 
     }
 
-
-
     private void removeSelectedLine() {
 
         int row = cartTable.getSelectedRow();
@@ -946,8 +884,6 @@ public class PosPanel extends JPanel {
         fillCart();
 
     }
-
-
 
     private void editSelectedLine() {
 
@@ -1015,8 +951,6 @@ public class PosPanel extends JPanel {
 
     }
 
-
-
     private void clearCartWithConfirm() {
 
         if (cartLines.isEmpty() || UiUtils.confirm(this, "Bạn muốn xóa hết món trong giỏ?")) {
@@ -1028,8 +962,6 @@ public class PosPanel extends JPanel {
         }
 
     }
-
-
 
     private void checkout() {
 
@@ -1131,8 +1063,6 @@ public class PosPanel extends JPanel {
 
     }
 
-
-
     private void startNewOrder() {
 
         cartLines.clear();
@@ -1146,5 +1076,4 @@ public class PosPanel extends JPanel {
     }
 
 }
-
 

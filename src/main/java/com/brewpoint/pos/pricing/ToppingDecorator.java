@@ -1,4 +1,4 @@
-package com.brewpoint.pos.decorator;
+package com.brewpoint.pos.pricing;
 
 import java.math.BigDecimal;
 

@@ -22,7 +22,7 @@ import java.sql.SQLException;
 public class LoginFrame extends JFrame {
     private static final long serialVersionUID = 1L;
 
-    private final transient AuthController authController = new AuthController();
+    private final transient AuthController authController = com.brewpoint.pos.DependencyContainer.getInstance().getAuthController();
     private final JTextField usernameField = new JTextField("admin", 18);
     private final JPasswordField passwordField = new JPasswordField(18);
 

@@ -11,8 +11,13 @@ import com.brewpoint.pos.util.ValidationUtils;
 import java.sql.SQLException;
 
 public class AuthService {
-    private final UserDAO userDAO = new UserDAO();
-    private final EmployeeDAO employeeDAO = new EmployeeDAO();
+    private final UserDAO userDAO ;
+    private final EmployeeDAO employeeDAO ;
+
+    public AuthService(UserDAO userDAO, EmployeeDAO employeeDAO) {
+        this.userDAO = userDAO;
+        this.employeeDAO = employeeDAO;
+    }
 
     public User login(String username, String password) throws SQLException {
         String cleanUsername = ValidationUtils.requireText(username, "Tên đăng nhập");

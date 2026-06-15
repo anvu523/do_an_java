@@ -1,9 +1,9 @@
 package com.brewpoint.pos.view;
 
 import com.brewpoint.pos.controller.CatalogController;
-import com.brewpoint.pos.decorator.BaseDrink;
-import com.brewpoint.pos.decorator.DrinkComponent;
-import com.brewpoint.pos.decorator.ToppingDecorator;
+import com.brewpoint.pos.pricing.BaseDrink;
+import com.brewpoint.pos.pricing.DrinkComponent;
+import com.brewpoint.pos.pricing.ToppingDecorator;
 import com.brewpoint.pos.model.CartLineRequest;
 import com.brewpoint.pos.model.Product;
 import com.brewpoint.pos.model.ProductSize;

@@ -17,12 +17,21 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class ReportController {
-    private final ReportServiceFacade reportService = new ReportServiceFacade();
-    private final JasperReportExporter jasperReportExporter = new JasperReportExporter();
-    private final ReportExportService reportExportService = new ReportExportService();
-    private final ReportExportStrategy pdfStrategy = new PdfReportExportStrategy();
-    private final ReportExportStrategy xlsxStrategy = new XlsxReportExportStrategy();
-    private final ReportExportStrategy docxStrategy = new DocxReportExportStrategy();
+    private final ReportServiceFacade reportService ;
+    private final JasperReportExporter jasperReportExporter ;
+    private final ReportExportService reportExportService ;
+    private final ReportExportStrategy pdfStrategy ;
+    private final ReportExportStrategy xlsxStrategy ;
+    private final ReportExportStrategy docxStrategy ;
+
+    public ReportController(ReportServiceFacade reportService, JasperReportExporter jasperReportExporter, ReportExportService reportExportService, ReportExportStrategy pdfStrategy, ReportExportStrategy xlsxStrategy, ReportExportStrategy docxStrategy) {
+        this.reportService = reportService;
+        this.jasperReportExporter = jasperReportExporter;
+        this.reportExportService = reportExportService;
+        this.pdfStrategy = pdfStrategy;
+        this.xlsxStrategy = xlsxStrategy;
+        this.docxStrategy = docxStrategy;
+    }
 
     public ReportExportStrategy getPdfStrategy() {
         return pdfStrategy;

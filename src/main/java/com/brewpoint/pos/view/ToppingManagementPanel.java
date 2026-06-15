@@ -23,7 +23,7 @@ import java.util.List;
 public class ToppingManagementPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    private final transient CatalogController controller = new CatalogController();
+    private final transient CatalogController controller = com.brewpoint.pos.DependencyContainer.getInstance().getCatalogController();
     private final DefaultTableModel model = new DefaultTableModel(
             new Object[]{"Mã topping", "Tên", "Giá thêm", "Trạng thái"}, 0) {
         private static final long serialVersionUID = 1L;

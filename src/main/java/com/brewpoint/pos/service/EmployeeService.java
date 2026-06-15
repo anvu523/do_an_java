@@ -15,8 +15,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class EmployeeService {
-    private final EmployeeDAO employeeDAO = new EmployeeDAO();
-    private final UserDAO userDAO = new UserDAO();
+    private final EmployeeDAO employeeDAO ;
+    private final UserDAO userDAO ;
+
+    public EmployeeService(EmployeeDAO employeeDAO, UserDAO userDAO) {
+        this.employeeDAO = employeeDAO;
+        this.userDAO = userDAO;
+    }
 
     public List<Employee> findAll() throws SQLException {
         return employeeDAO.findAll();

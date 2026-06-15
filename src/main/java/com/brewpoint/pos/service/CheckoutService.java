@@ -6,10 +6,10 @@ import com.brewpoint.pos.dao.ProductDAO;
 import com.brewpoint.pos.dao.ProductSizeDAO;
 import com.brewpoint.pos.dao.ToppingDAO;
 import com.brewpoint.pos.database.DatabaseManager;
-import com.brewpoint.pos.decorator.BaseDrink;
-import com.brewpoint.pos.decorator.DrinkComponent;
-import com.brewpoint.pos.decorator.ToppingDecorator;
-import com.brewpoint.pos.factory.PaymentStrategyFactory;
+import com.brewpoint.pos.pricing.BaseDrink;
+import com.brewpoint.pos.pricing.DrinkComponent;
+import com.brewpoint.pos.pricing.ToppingDecorator;
+import com.brewpoint.pos.payment.PaymentStrategyFactory;
 import com.brewpoint.pos.model.CartLine;
 import com.brewpoint.pos.model.CartLineRequest;
 import com.brewpoint.pos.model.CheckoutRequest;
@@ -20,8 +20,8 @@ import com.brewpoint.pos.model.Product;
 import com.brewpoint.pos.model.ProductSize;
 import com.brewpoint.pos.model.Topping;
 import com.brewpoint.pos.model.ToppingSnapshot;
-import com.brewpoint.pos.strategy.PaymentResult;
-import com.brewpoint.pos.strategy.PaymentStrategy;
+import com.brewpoint.pos.payment.PaymentResult;
+import com.brewpoint.pos.payment.PaymentStrategy;
 import com.brewpoint.pos.util.ValidationException;
 import com.brewpoint.pos.util.ValidationUtils;
 
@@ -36,11 +36,19 @@ import java.util.List;
 import java.util.Set;
 
 public class CheckoutService {
-    private final EmployeeDAO employeeDAO = new EmployeeDAO();
-    private final ProductDAO productDAO = new ProductDAO();
-    private final ProductSizeDAO sizeDAO = new ProductSizeDAO();
-    private final ToppingDAO toppingDAO = new ToppingDAO();
-    private final OrderDAO orderDAO = new OrderDAO();
+    private final EmployeeDAO employeeDAO ;
+    private final ProductDAO productDAO ;
+    private final ProductSizeDAO sizeDAO ;
+    private final ToppingDAO toppingDAO ;
+    private final OrderDAO orderDAO ;
+
+    public CheckoutService(EmployeeDAO employeeDAO, ProductDAO productDAO, ProductSizeDAO sizeDAO, ToppingDAO toppingDAO, OrderDAO orderDAO) {
+        this.employeeDAO = employeeDAO;
+        this.productDAO = productDAO;
+        this.sizeDAO = sizeDAO;
+        this.toppingDAO = toppingDAO;
+        this.orderDAO = orderDAO;
+    }
 
     public CartLine previewLine(CartLineRequest request) throws SQLException {
         try (Connection connection = DatabaseManager.getInstance().getConnection()) {
