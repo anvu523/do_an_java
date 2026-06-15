@@ -19,7 +19,7 @@ public class ProductDAO {
                 + "p.image_path, p.stock_quantity, p.active, "
                 + "(SELECT MIN(ps.sale_price) FROM product_sizes ps WHERE ps.product_id = p.product_id AND ps.active = 1) AS from_price "
                 + "FROM products p JOIN categories c ON c.category_id = p.category_id "
-                + "WHERE p.name LIKE ? AND (? IS NULL OR p.category_id = ?) AND (? = 0 OR p.active = 1) "
+                + "WHERE p.name LIKE ? AND (? IS NULL OR p.category_id = ?) AND (? = 0 OR (p.active = 1 AND c.active = 1)) "
                 + "ORDER BY p.product_id";
         try (Connection connection = DatabaseManager.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -53,7 +53,7 @@ public class ProductDAO {
                 + "p.image_path, p.stock_quantity, p.active, "
                 + "(SELECT MIN(ps.sale_price) FROM product_sizes ps WHERE ps.product_id = p.product_id AND ps.active = 1) AS from_price "
                 + "FROM products p JOIN categories c ON c.category_id = p.category_id "
-                + "WHERE p.product_id = ? AND (? = 0 OR p.active = 1)";
+                + "WHERE p.product_id = ? AND (? = 0 OR (p.active = 1 AND c.active = 1))";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, productId);
             statement.setInt(2, activeOnly ? 1 : 0);

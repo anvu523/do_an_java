@@ -66,6 +66,29 @@ public class CategoryDAO {
         }
     }
 
+    public void updateDisplayOrders(List<Category> categories) throws SQLException {
+        String sql = "UPDATE categories SET display_order = ? WHERE category_id = ?";
+        try (Connection connection = DatabaseManager.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            boolean autoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            try {
+                for (Category category : categories) {
+                    statement.setInt(1, category.getDisplayOrder());
+                    statement.setInt(2, category.getCategoryId());
+                    statement.addBatch();
+                }
+                statement.executeBatch();
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(autoCommit);
+            }
+        }
+    }
+
     private Category mapCategory(ResultSet resultSet) throws SQLException {
         return new Category(
                 resultSet.getInt("category_id"),

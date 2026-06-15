@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CategoryService {
-    private final CategoryDAO categoryDAO ;
+    private final CategoryDAO categoryDAO;
 
     public CategoryService(CategoryDAO categoryDAO) {
         this.categoryDAO = categoryDAO;
@@ -37,6 +37,11 @@ public class CategoryService {
             throw new ValidationException("Chọn danh mục cần ngừng sử dụng.");
         }
         categoryDAO.deactivate(categoryId);
+    }
+
+    public void updateDisplayOrders(List<Category> categories) throws SQLException {
+        if (categories == null || categories.isEmpty()) return;
+        categoryDAO.updateDisplayOrders(categories);
     }
 
     private void validate(Category category) {

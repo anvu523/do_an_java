@@ -12,9 +12,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CatalogController {
-    private final CategoryService categoryService ;
-    private final ProductService productService ;
-    private final ToppingService toppingService ;
+    private final CategoryService categoryService;
+    private final ProductService productService;
+    private final ToppingService toppingService;
 
     public CatalogController(CategoryService categoryService, ProductService productService, ToppingService toppingService) {
         this.categoryService = categoryService;
@@ -36,6 +36,10 @@ public class CatalogController {
 
     public void deactivateCategory(int categoryId) throws SQLException {
         categoryService.deactivate(categoryId);
+    }
+
+    public void updateCategoryDisplayOrders(List<Category> categories) throws SQLException {
+        categoryService.updateDisplayOrders(categories);
     }
 
     public List<Product> searchProducts(String keyword, Integer categoryId, boolean activeOnly) throws SQLException {
