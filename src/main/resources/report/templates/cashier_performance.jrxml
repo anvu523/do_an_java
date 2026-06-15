@@ -11,58 +11,85 @@
     <field name="orderCount" class="java.lang.Integer"/>
     <field name="revenueText" class="java.lang.String"/>
     <title>
-        <band height="90">
+        <band height="95">
+            <line>
+                <reportElement x="0" y="85" width="555" height="1" forecolor="#0F172A"/>
+            </line>
             <textField>
-                <reportElement x="0" y="0" width="555" height="28"/>
-                <textElement textAlignment="Center"><font fontName="DejaVu Sans" size="18" isBold="true" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/></textElement>
+                <reportElement x="0" y="0" width="555" height="30"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="DejaVu Sans" size="20" isBold="true" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+                </textElement>
                 <textFieldExpression><![CDATA[$P{REPORT_TITLE}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="0" y="32" width="555" height="18"/>
-                <textElement textAlignment="Center"><font fontName="DejaVu Sans" size="11" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/></textElement>
+                <reportElement x="0" y="35" width="555" height="18" forecolor="#475569"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="DejaVu Sans" size="11" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+                </textElement>
                 <textFieldExpression><![CDATA["Tháng: " + $P{REPORT_MONTH}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="0" y="54" width="555" height="18"/>
-                <textElement textAlignment="Center"><font fontName="DejaVu Sans" size="10" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/></textElement>
+                <reportElement x="0" y="55" width="555" height="18" forecolor="#64748B"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="DejaVu Sans" size="10" isItalic="true" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+                </textElement>
                 <textFieldExpression><![CDATA["Thời gian tạo: " + $P{GENERATED_AT}]]></textFieldExpression>
             </textField>
         </band>
     </title>
     <columnHeader>
-        <band height="24">
+        <band height="28">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="24" backcolor="#1E293B" forecolor="#1E293B"/>
+            </rectangle>
             <staticText>
-                <reportElement x="0" y="0" width="280" height="20"/>
-                <textElement><font fontName="DejaVu Sans" size="11" isBold="true" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/></textElement>
+                <reportElement x="10" y="3" width="270" height="18" forecolor="#FFFFFF"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="DejaVu Sans" size="10" isBold="true" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+                </textElement>
                 <text><![CDATA[Thu ngân]]></text>
             </staticText>
             <staticText>
-                <reportElement x="280" y="0" width="80" height="20"/>
-                <textElement textAlignment="Center"><font fontName="DejaVu Sans" size="11" isBold="true" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/></textElement>
+                <reportElement x="280" y="3" width="80" height="18" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="DejaVu Sans" size="10" isBold="true" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+                </textElement>
                 <text><![CDATA[Số đơn]]></text>
             </staticText>
             <staticText>
-                <reportElement x="360" y="0" width="195" height="20"/>
-                <textElement textAlignment="Right"><font fontName="DejaVu Sans" size="11" isBold="true" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/></textElement>
+                <reportElement x="360" y="3" width="185" height="18" forecolor="#FFFFFF"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="DejaVu Sans" size="10" isBold="true" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+                </textElement>
                 <text><![CDATA[Doanh thu]]></text>
             </staticText>
         </band>
     </columnHeader>
     <detail>
         <band height="22">
+            <line>
+                <reportElement x="0" y="21" width="555" height="1" forecolor="#E2E8F0"/>
+            </line>
             <textField>
-                <reportElement x="0" y="0" width="280" height="18"/>
-                <textElement><font fontName="DejaVu Sans" size="10" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/></textElement>
+                <reportElement x="10" y="2" width="270" height="18"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="DejaVu Sans" size="9" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+                </textElement>
                 <textFieldExpression><![CDATA[$F{cashierName}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="280" y="0" width="80" height="18"/>
-                <textElement textAlignment="Center"><font fontName="DejaVu Sans" size="10" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/></textElement>
+                <reportElement x="280" y="2" width="80" height="18"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="DejaVu Sans" size="9" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+                </textElement>
                 <textFieldExpression><![CDATA[$F{orderCount}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="360" y="0" width="195" height="18"/>
-                <textElement textAlignment="Right"><font fontName="DejaVu Sans" size="10" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/></textElement>
+                <reportElement x="360" y="2" width="185" height="18"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="DejaVu Sans" size="9" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+                </textElement>
                 <textFieldExpression><![CDATA[$F{revenueText}]]></textFieldExpression>
             </textField>
         </band>

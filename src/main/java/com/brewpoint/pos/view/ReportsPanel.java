@@ -1,6 +1,7 @@
 package com.brewpoint.pos.view;
 
 import com.brewpoint.pos.controller.ReportController;
+import com.brewpoint.pos.report.exporter.ReportExportStrategy;
 import com.brewpoint.pos.util.DateUtils;
 import com.brewpoint.pos.util.FormLayout;
 import com.brewpoint.pos.util.UIConstants;
@@ -74,22 +75,29 @@ public class ReportsPanel extends JPanel {
         previewButton.addActionListener(e -> preview());
         JButton printButton = UiUtils.secondaryButton("In");
         printButton.addActionListener(e -> print());
-        JButton exportButton = UiUtils.primaryButton("Xuất PDF");
-        exportButton.addActionListener(e -> exportPdf());
+        
+        JButton exportPdfButton = UiUtils.primaryButton("Xuất PDF");
+        exportPdfButton.addActionListener(e -> exportReport(controller.getPdfStrategy()));
+        
+        JButton exportXlsxButton = UiUtils.primaryButton("Xuất Excel");
+        exportXlsxButton.addActionListener(e -> exportReport(controller.getXlsxStrategy()));
+        
+        JButton exportDocxButton = UiUtils.primaryButton("Xuất Word");
+        exportDocxButton.addActionListener(e -> exportReport(controller.getDocxStrategy()));
 
         JPanel body = new FormLayout()
                 .addRow("Chọn báo cáo", reportTypeCombo)
                 .addFullWidth(parameterPanel)
                 .build();
         showParameterCard();
-        return UiUtils.wrapFormCard(body, previewButton, printButton, exportButton);
+        return UiUtils.wrapFormCard(body, previewButton, printButton, exportPdfButton, exportXlsxButton, exportDocxButton);
     }
 
     private JPanel buildHint() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setOpaque(false);
-        panel.add(hintLine("Chọn báo cáo, nhập ngày hoặc tháng, rồi bấm Xem báo cáo, In hoặc Xuất PDF."));
+        panel.add(hintLine("Chọn báo cáo, nhập ngày hoặc tháng, rồi bấm Xem báo cáo, In, Xuất PDF, Xuất Excel hoặc Xuất Word."));
         panel.add(Box.createVerticalStrut(UIConstants.SPACING_SM));
         panel.add(hintLine("In hóa đơn từng đơn tại màn Lịch sử hóa đơn."));
         return panel;
@@ -146,19 +154,19 @@ public class ReportsPanel extends JPanel {
         }
     }
 
-    private void exportPdf() {
+    private void exportReport(ReportExportStrategy strategy) {
         int type = reportTypeCombo.getSelectedIndex();
         if (type == 0) {
-            controller.exportDailyRevenuePdf(parseDate(), this);
+            controller.exportDailyRevenue(parseDate(), strategy, this);
         } else {
             int year = parseYear();
             int month = parseMonth();
             if (type == 1) {
-                controller.exportMonthlyRevenuePdf(year, month, this);
+                controller.exportMonthlyRevenue(year, month, strategy, this);
             } else if (type == 2) {
-                controller.exportBestSellingProductsPdf(year, month, this);
+                controller.exportBestSellingProducts(year, month, strategy, this);
             } else {
-                controller.exportCashierPerformancePdf(year, month, this);
+                controller.exportCashierPerformance(year, month, strategy, this);
             }
         }
     }

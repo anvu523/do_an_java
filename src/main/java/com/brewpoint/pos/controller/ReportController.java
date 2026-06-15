@@ -1,7 +1,11 @@
 package com.brewpoint.pos.controller;
 
 import com.brewpoint.pos.report.exporter.JasperReportExporter;
-import com.brewpoint.pos.report.exporter.PdfExportService;
+import com.brewpoint.pos.report.exporter.ReportExportService;
+import com.brewpoint.pos.report.exporter.ReportExportStrategy;
+import com.brewpoint.pos.report.exporter.PdfReportExportStrategy;
+import com.brewpoint.pos.report.exporter.XlsxReportExportStrategy;
+import com.brewpoint.pos.report.exporter.DocxReportExportStrategy;
 import com.brewpoint.pos.report.service.ReportServiceFacade;
 import com.brewpoint.pos.util.UiUtils;
 import net.sf.jasperreports.engine.JRException;
@@ -15,7 +19,22 @@ import java.time.LocalDate;
 public class ReportController {
     private final ReportServiceFacade reportService = new ReportServiceFacade();
     private final JasperReportExporter jasperReportExporter = new JasperReportExporter();
-    private final PdfExportService pdfExportService = new PdfExportService();
+    private final ReportExportService reportExportService = new ReportExportService();
+    private final ReportExportStrategy pdfStrategy = new PdfReportExportStrategy();
+    private final ReportExportStrategy xlsxStrategy = new XlsxReportExportStrategy();
+    private final ReportExportStrategy docxStrategy = new DocxReportExportStrategy();
+
+    public ReportExportStrategy getPdfStrategy() {
+        return pdfStrategy;
+    }
+
+    public ReportExportStrategy getXlsxStrategy() {
+        return xlsxStrategy;
+    }
+
+    public ReportExportStrategy getDocxStrategy() {
+        return docxStrategy;
+    }
 
     public void previewReceipt(long orderId, Component parent) {
         run(parent, "Không xem được hóa đơn.", new ReportAction() {
@@ -37,7 +56,7 @@ public class ReportController {
     public void exportReceiptPdf(long orderId, Component parent) {
         run(parent, "Không xuất PDF hóa đơn.", new ReportAction() {
             public void run() throws Exception {
-                exportPdf(parent, reportService.receipt(orderId), reportService.receiptPdfName(orderId));
+                exportReport(parent, reportService.receipt(orderId), reportService.receiptPdfName(orderId), pdfStrategy);
             }
         });
     }
@@ -58,10 +77,11 @@ public class ReportController {
         });
     }
 
-    public void exportDailyRevenuePdf(LocalDate date, Component parent) {
-        run(parent, "Không xuất PDF báo cáo.", new ReportAction() {
+    public void exportDailyRevenue(LocalDate date, ReportExportStrategy strategy, Component parent) {
+        String ext = strategy.getExtension().toUpperCase();
+        run(parent, "Không xuất báo cáo " + ext + ".", new ReportAction() {
             public void run() throws Exception {
-                exportPdf(parent, reportService.dailyRevenue(date), reportService.dailyRevenuePdfName(date));
+                exportReport(parent, reportService.dailyRevenue(date), reportService.dailyRevenuePdfName(date), strategy);
             }
         });
     }
@@ -82,11 +102,12 @@ public class ReportController {
         });
     }
 
-    public void exportMonthlyRevenuePdf(int year, int month, Component parent) {
-        run(parent, "Không xuất PDF báo cáo.", new ReportAction() {
+    public void exportMonthlyRevenue(int year, int month, ReportExportStrategy strategy, Component parent) {
+        String ext = strategy.getExtension().toUpperCase();
+        run(parent, "Không xuất báo cáo " + ext + ".", new ReportAction() {
             public void run() throws Exception {
-                exportPdf(parent, reportService.monthlyRevenue(year, month),
-                        reportService.monthlyRevenuePdfName(year, month));
+                exportReport(parent, reportService.monthlyRevenue(year, month),
+                        reportService.monthlyRevenuePdfName(year, month), strategy);
             }
         });
     }
@@ -107,11 +128,12 @@ public class ReportController {
         });
     }
 
-    public void exportBestSellingProductsPdf(int year, int month, Component parent) {
-        run(parent, "Không xuất PDF báo cáo.", new ReportAction() {
+    public void exportBestSellingProducts(int year, int month, ReportExportStrategy strategy, Component parent) {
+        String ext = strategy.getExtension().toUpperCase();
+        run(parent, "Không xuất báo cáo " + ext + ".", new ReportAction() {
             public void run() throws Exception {
-                exportPdf(parent, reportService.bestSellingProducts(year, month),
-                        reportService.bestSellingProductsPdfName(year, month));
+                exportReport(parent, reportService.bestSellingProducts(year, month),
+                        reportService.bestSellingProductsPdfName(year, month), strategy);
             }
         });
     }
@@ -132,19 +154,21 @@ public class ReportController {
         });
     }
 
-    public void exportCashierPerformancePdf(int year, int month, Component parent) {
-        run(parent, "Không xuất PDF báo cáo.", new ReportAction() {
+    public void exportCashierPerformance(int year, int month, ReportExportStrategy strategy, Component parent) {
+        String ext = strategy.getExtension().toUpperCase();
+        run(parent, "Không xuất báo cáo " + ext + ".", new ReportAction() {
             public void run() throws Exception {
-                exportPdf(parent, reportService.cashierPerformance(year, month),
-                        reportService.cashierPerformancePdfName(year, month));
+                exportReport(parent, reportService.cashierPerformance(year, month),
+                        reportService.cashierPerformancePdfName(year, month), strategy);
             }
         });
     }
 
-    private void exportPdf(Component parent, JasperPrint print, String defaultFileName) throws JRException {
-        File exported = pdfExportService.exportWithChooser(parent, print, defaultFileName);
+    private void exportReport(Component parent, JasperPrint print, String defaultFileName, ReportExportStrategy strategy) throws JRException {
+        File exported = reportExportService.exportWithChooser(parent, print, defaultFileName, strategy);
         if (exported != null) {
-            UiUtils.showInfo(parent, "Đã xuất PDF: " + exported.getAbsolutePath());
+            String formatName = strategy.getExtension().toUpperCase();
+            UiUtils.showInfo(parent, "Đã xuất báo cáo định dạng " + formatName + " thành công:\n" + exported.getAbsolutePath());
         }
     }
 

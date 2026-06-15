@@ -14,9 +14,19 @@ public final class DatabaseManager {
     private static DatabaseManager instance;
 
     private final Properties properties = new Properties();
+    private SimpleConnectionPool connectionPool;
 
     private DatabaseManager() {
         loadProperties();
+        try {
+            Class.forName(properties.getProperty("db.driver", "com.mysql.cj.jdbc.Driver"));
+            int poolSize = Integer.parseInt(properties.getProperty("db.pool.size", "5").trim());
+            this.connectionPool = new SimpleConnectionPool(properties, poolSize);
+        } catch (ClassNotFoundException ex) {
+            throw new IllegalStateException("Không tìm thấy MySQL JDBC Driver.", ex);
+        } catch (SQLException ex) {
+            throw new IllegalStateException("Không thể khởi tạo Connection Pool.", ex);
+        }
     }
 
     public static synchronized DatabaseManager getInstance() {
@@ -27,23 +37,19 @@ public final class DatabaseManager {
     }
 
     public Connection getConnection() throws SQLException {
-        try {
-            Class.forName(properties.getProperty("db.driver", "com.mysql.cj.jdbc.Driver"));
-        } catch (ClassNotFoundException ex) {
-            throw new SQLException("Không tìm thấy MySQL JDBC Driver.", ex);
+        if (connectionPool == null) {
+            throw new SQLException("Connection Pool chưa được khởi tạo.");
         }
-        Connection connection = DriverManager.getConnection(
-                properties.getProperty("db.url"),
-                properties.getProperty("db.username"),
-                properties.getProperty("db.password")
-        );
-        try {
-            connection.createStatement().execute("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
-        } catch (SQLException ex) {
-            connection.close();
-            throw ex;
+        return connectionPool.getConnection();
+    }
+
+    public void shutdown() {
+        if (connectionPool != null) {
+            try {
+                connectionPool.shutdown();
+            } catch (SQLException ignored) {
+            }
         }
-        return connection;
     }
 
     public String getUrl() {
