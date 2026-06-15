@@ -163,7 +163,7 @@ public class ProductOptionDialog extends JDialog {
         section.setBackground(UIConstants.BG_PANEL);
         section.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        section.add(sectionCaption("Size"));
+        section.add(sectionCaption("Cỡ ly"));
         section.add(Box.createVerticalStrut(UIConstants.SPACING_SM));
         section.add(buildSizePanel());
         section.add(Box.createVerticalStrut(UIConstants.SPACING_MD));
@@ -174,7 +174,7 @@ public class ProductOptionDialog extends JDialog {
     private JPanel buildToppingSection() {
         JPanel section = new JPanel(new BorderLayout(0, UIConstants.SPACING_SM));
         section.setBackground(UIConstants.BG_PANEL);
-        section.add(sectionCaption("Topping"), BorderLayout.NORTH);
+        section.add(sectionCaption("Topping bổ sung"), BorderLayout.NORTH);
         section.add(buildToppingScroll(), BorderLayout.CENTER);
         return section;
     }
@@ -425,7 +425,7 @@ public class ProductOptionDialog extends JDialog {
     private void accept() {
         ProductSize size = selectedSize();
         if (size == null) {
-            UiUtils.showInfo(this, "Chọn size.");
+            UiUtils.showInfo(this, "Vui lòng chọn cỡ ly.");
             return;
         }
         CartLineRequest request = new CartLineRequest();

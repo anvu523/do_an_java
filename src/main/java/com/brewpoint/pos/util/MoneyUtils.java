@@ -22,6 +22,11 @@ public final class MoneyUtils {
         return FORMATTER.format(safeAmount) + " ₫";
     }
 
+    public static String formatVndInput(BigDecimal amount) {
+        BigDecimal safeAmount = amount == null ? BigDecimal.ZERO : amount;
+        return FORMATTER.format(safeAmount);
+    }
+
     public static BigDecimal parseVnd(String value) {
         return ValidationUtils.parseNonNegativeMoney(value, "Số tiền");
     }

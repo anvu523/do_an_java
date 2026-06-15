@@ -3,6 +3,7 @@ package com.brewpoint.pos.view;
 import com.brewpoint.pos.controller.StatisticController;
 import com.brewpoint.pos.model.ProductSalesStat;
 import com.brewpoint.pos.model.StatisticSummary;
+import com.brewpoint.pos.util.DateUtils;
 import com.brewpoint.pos.util.FormLayout;
 import com.brewpoint.pos.util.MoneyUtils;
 import com.brewpoint.pos.util.UIConstants;
@@ -20,14 +21,13 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class StatisticsPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private final transient StatisticController controller = new StatisticController();
-    private final JTextField dateField = new JTextField(LocalDate.now().toString(), 10);
+    private final JTextField dateField = new JTextField(DateUtils.format(LocalDate.now()), 12);
     private final JLabel todayRevenueLabel = new JLabel("0 ₫");
     private final JLabel selectedRevenueLabel = new JLabel("0 ₫");
     private final JLabel orderCountLabel = new JLabel("0");
@@ -56,7 +56,7 @@ public class StatisticsPanel extends JPanel {
         JButton loadButton = UiUtils.primaryButton("Tải thống kê");
         loadButton.addActionListener(e -> loadData());
         top.add(new FormLayout()
-                .addRow("Ngày yyyy-MM-dd", dateField)
+                .addRow("Ngày (dd/MM/yyyy)", dateField)
                 .buildCard(loadButton), BorderLayout.NORTH);
         JPanel cards = new JPanel(new GridLayout(1, 3, UIConstants.SPACING_MD, 0));
         cards.add(metric("Doanh thu hôm nay", todayRevenueLabel));
@@ -78,9 +78,9 @@ public class StatisticsPanel extends JPanel {
     private void loadData() {
         LocalDate selectedDate;
         try {
-            selectedDate = LocalDate.parse(dateField.getText().trim());
-        } catch (DateTimeParseException ex) {
-            UiUtils.showError(this, new IllegalArgumentException("Ngày phải có dạng yyyy-MM-dd."));
+            selectedDate = DateUtils.parseRequired(dateField.getText());
+        } catch (IllegalArgumentException ex) {
+            UiUtils.showError(this, ex);
             return;
         }
         SwingWorker<Object[], Void> worker = new SwingWorker<Object[], Void>() {

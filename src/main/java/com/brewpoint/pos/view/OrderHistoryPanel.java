@@ -2,6 +2,7 @@ package com.brewpoint.pos.view;
 
 import com.brewpoint.pos.controller.OrderController;
 import com.brewpoint.pos.model.OrderSummary;
+import com.brewpoint.pos.util.DateUtils;
 import com.brewpoint.pos.util.FormLayout;
 import com.brewpoint.pos.util.MoneyUtils;
 import com.brewpoint.pos.util.UIConstants;
@@ -18,7 +19,6 @@ import java.awt.FlowLayout;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +60,7 @@ public class OrderHistoryPanel extends JPanel {
         searchButton.addActionListener(e -> loadData());
         return new FormLayout()
                 .addRow("Mã hóa đơn", codeField)
-                .addRow("Ngày yyyy-MM-dd", dateField)
+                .addRow("Ngày (dd/MM/yyyy)", dateField)
                 .buildCard(searchButton);
     }
 
@@ -96,15 +96,7 @@ public class OrderHistoryPanel extends JPanel {
     }
 
     private LocalDate parseDate() {
-        String value = dateField.getText() == null ? "" : dateField.getText().trim();
-        if (value.isEmpty()) {
-            return null;
-        }
-        try {
-            return LocalDate.parse(value);
-        } catch (DateTimeParseException ex) {
-            throw new IllegalArgumentException("Ngày phải có dạng yyyy-MM-dd.");
-        }
+        return DateUtils.parseOptional(dateField.getText());
     }
 
     private void showDetail() {

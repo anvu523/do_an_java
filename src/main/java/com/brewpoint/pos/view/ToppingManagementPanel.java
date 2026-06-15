@@ -24,7 +24,8 @@ public class ToppingManagementPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private final transient CatalogController controller = new CatalogController();
-    private final DefaultTableModel model = new DefaultTableModel(new Object[]{"Mã", "Code", "Tên", "Giá", "Trạng thái"}, 0) {
+    private final DefaultTableModel model = new DefaultTableModel(
+            new Object[]{"Mã topping", "Tên", "Giá thêm", "Trạng thái"}, 0) {
         private static final long serialVersionUID = 1L;
 
         public boolean isCellEditable(int row, int column) {
@@ -61,9 +62,9 @@ public class ToppingManagementPanel extends JPanel {
         JButton clearButton = UiUtils.secondaryButton("Làm mới");
         clearButton.addActionListener(e -> clearForm());
         return new FormLayout()
-                .addRow("Code", codeField)
-                .addRow("Tên", nameField)
-                .addRow("Giá", priceField)
+                .addRow("Mã topping", codeField)
+                .addRow("Tên topping", nameField)
+                .addRow("Giá thêm", priceField)
                 .addFullWidth(activeBox)
                 .buildCard(saveButton, deactivateButton, clearButton);
     }
@@ -75,7 +76,6 @@ public class ToppingManagementPanel extends JPanel {
             model.setRowCount(0);
             for (Topping topping : toppings) {
                 model.addRow(new Object[]{
-                        Integer.valueOf(topping.getToppingId()),
                         topping.getToppingCode(),
                         topping.getName(),
                         MoneyUtils.formatVnd(topping.getExtraPrice()),

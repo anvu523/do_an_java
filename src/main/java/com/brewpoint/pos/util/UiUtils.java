@@ -57,6 +57,16 @@ public final class UiUtils {
         return styledButton(text, UIConstants.BG_PANEL, UIConstants.BORDER, UIConstants.TEXT_PRIMARY);
     }
 
+    public static void setNavButtonSelected(JButton button, boolean selected) {
+        if (selected) {
+            button.setFont(UIConstants.fontBold(UIConstants.FONT_BUTTON));
+            button.setForeground(UIConstants.PRIMARY);
+        } else {
+            button.setFont(UIConstants.font(UIConstants.FONT_BUTTON));
+            button.setForeground(UIConstants.TEXT_PRIMARY);
+        }
+    }
+
     public static JButton dangerButton(String text) {
         return styledButton(text, UIConstants.DANGER, UIConstants.DANGER_DARK, UIConstants.TEXT_INVERSE);
     }

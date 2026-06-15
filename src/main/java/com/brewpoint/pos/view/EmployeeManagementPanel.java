@@ -26,7 +26,7 @@ public class EmployeeManagementPanel extends JPanel {
     private final transient EmployeeController controller = new EmployeeController();
     private final int currentUserId;
     private final DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"Mã NV", "User", "Họ tên", "Vai trò", "Điện thoại", "Email", "Trạng thái"}, 0) {
+            new Object[]{"Mã NV", "Tên đăng nhập", "Họ tên", "Vai trò", "Điện thoại", "Email", "Trạng thái"}, 0) {
         private static final long serialVersionUID = 1L;
 
         public boolean isCellEditable(int row, int column) {
@@ -40,7 +40,7 @@ public class EmployeeManagementPanel extends JPanel {
     private final JTextField phoneField = new JTextField(10);
     private final JTextField emailField = new JTextField(18);
     private final JComboBox<Role> roleCombo = new JComboBox<Role>(Role.values());
-    private final JCheckBox activeBox = new JCheckBox("Đang làm", true);
+    private final JCheckBox activeBox = new JCheckBox("Đang làm việc", true);
     private final List<Employee> employees = new ArrayList<Employee>();
     private int selectedEmployeeId;
     private int selectedUserId;
@@ -68,7 +68,7 @@ public class EmployeeManagementPanel extends JPanel {
         activeBox.setFont(UIConstants.font(UIConstants.FONT_LABEL));
         JButton saveButton = UiUtils.primaryButton("Lưu");
         saveButton.addActionListener(e -> save());
-        JButton resetButton = UiUtils.secondaryButton("Reset mật khẩu");
+        JButton resetButton = UiUtils.secondaryButton("Đặt lại mật khẩu");
         resetButton.addActionListener(e -> resetPassword());
         JButton clearButton = UiUtils.secondaryButton("Làm mới");
         clearButton.addActionListener(e -> clearForm());
@@ -96,7 +96,7 @@ public class EmployeeManagementPanel extends JPanel {
                         employee.getRole().getDisplayName(),
                         employee.getPhone(),
                         employee.getEmail(),
-                        employee.isActive() ? "Đang làm" : "Đã khóa"
+                        employee.isActive() ? "Đang làm việc" : "Tạm khóa"
                 });
             }
         } catch (SQLException ex) {
@@ -146,12 +146,12 @@ public class EmployeeManagementPanel extends JPanel {
 
     private void resetPassword() {
         if (selectedUserId <= 0) {
-            UiUtils.showInfo(this, "Chọn tài khoản cần reset mật khẩu.");
+            UiUtils.showInfo(this, "Chọn tài khoản cần đặt lại mật khẩu.");
             return;
         }
         try {
             controller.resetPassword(selectedUserId, passwordField.getText());
-            UiUtils.showInfo(this, "Đã reset mật khẩu.");
+            UiUtils.showInfo(this, "Đã đặt lại mật khẩu thành công.");
         } catch (SQLException | RuntimeException ex) {
             UiUtils.showError(this, ex);
         }

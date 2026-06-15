@@ -28,7 +28,8 @@ public class SizeManagementDialog extends JDialog {
 
     private final int productId;
     private final transient CatalogController controller;
-    private final DefaultTableModel model = new DefaultTableModel(new Object[]{"Mã", "Code", "Tên", "Giá", "Trạng thái"}, 0) {
+    private final DefaultTableModel model = new DefaultTableModel(
+            new Object[]{"Mã cỡ", "Tên cỡ", "Giá bán", "Trạng thái"}, 0) {
         private static final long serialVersionUID = 1L;
 
         public boolean isCellEditable(int row, int column) {
@@ -44,7 +45,7 @@ public class SizeManagementDialog extends JDialog {
     private int selectedId;
 
     public SizeManagementDialog(Window owner, int productId, CatalogController controller) {
-        super(owner, "Quản lý size", Dialog.ModalityType.APPLICATION_MODAL);
+        super(owner, "Quản lý cỡ & giá", Dialog.ModalityType.APPLICATION_MODAL);
         this.productId = productId;
         this.controller = controller;
         setSize(680, 480);
@@ -74,9 +75,9 @@ public class SizeManagementDialog extends JDialog {
         JButton clearButton = UiUtils.secondaryButton("Làm mới");
         clearButton.addActionListener(e -> clearForm());
         return new FormLayout()
-                .addRow("Code", codeField)
-                .addRow("Tên", nameField)
-                .addRow("Giá", priceField)
+                .addRow("Mã cỡ", codeField)
+                .addRow("Tên cỡ", nameField)
+                .addRow("Giá bán", priceField)
                 .addFullWidth(activeBox)
                 .buildCard(saveButton, deactivateButton, clearButton);
     }
@@ -88,7 +89,6 @@ public class SizeManagementDialog extends JDialog {
             model.setRowCount(0);
             for (ProductSize size : sizes) {
                 model.addRow(new Object[]{
-                        Integer.valueOf(size.getProductSizeId()),
                         size.getSizeCode(),
                         size.getSizeName(),
                         MoneyUtils.formatVnd(size.getSalePrice()),
@@ -120,7 +120,7 @@ public class SizeManagementDialog extends JDialog {
             size.setProductId(productId);
             size.setSizeCode(codeField.getText());
             size.setSizeName(nameField.getText());
-            size.setSalePrice(ValidationUtils.requirePositiveMoney(priceField.getText(), "Giá size"));
+            size.setSalePrice(ValidationUtils.requirePositiveMoney(priceField.getText(), "Giá cỡ ly"));
             size.setActive(activeBox.isSelected());
             if (selectedId > 0) {
                 controller.updateSize(size);
@@ -136,7 +136,7 @@ public class SizeManagementDialog extends JDialog {
 
     private void deactivate() {
         if (selectedId <= 0) {
-            UiUtils.showInfo(this, "Chọn size cần ngừng bán.");
+            UiUtils.showInfo(this, "Chọn cỡ ly cần ngừng bán.");
             return;
         }
         try {

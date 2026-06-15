@@ -33,7 +33,7 @@ public class ProductManagementPanel extends JPanel {
     private final transient CatalogController controller = new CatalogController();
     private final transient ImageService imageService = new ImageService();
     private final DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"Mã", "Code", "Tên", "Danh mục", "Giá từ", "Tồn", "Trạng thái"}, 0) {
+            new Object[]{"Mã món", "Tên", "Danh mục", "Giá thấp nhất", "Tồn kho", "Trạng thái"}, 0) {
         private static final long serialVersionUID = 1L;
 
         public boolean isCellEditable(int row, int column) {
@@ -89,14 +89,14 @@ public class ProductManagementPanel extends JPanel {
         saveButton.addActionListener(e -> save());
         JButton deactivateButton = UiUtils.dangerButton("Ngừng bán");
         deactivateButton.addActionListener(e -> deactivate());
-        JButton sizeButton = UiUtils.secondaryButton("Quản lý size");
+        JButton sizeButton = UiUtils.secondaryButton("Quản lý cỡ & giá");
         sizeButton.addActionListener(e -> openSizeDialog());
         JButton clearButton = UiUtils.secondaryButton("Làm mới");
         clearButton.addActionListener(e -> clearForm());
 
         JPanel fields = new FormLayout()
-                .addRow("Code", codeField)
-                .addRow("Tên", nameField)
+                .addRow("Mã sản phẩm", codeField)
+                .addRow("Tên sản phẩm", nameField)
                 .addRow("Danh mục", categoryCombo)
                 .addRow("Tồn kho", stockField)
                 .addRow("Đường dẫn ảnh", imagePathField)
@@ -126,7 +126,6 @@ public class ProductManagementPanel extends JPanel {
             model.setRowCount(0);
             for (Product product : products) {
                 model.addRow(new Object[]{
-                        Integer.valueOf(product.getProductId()),
                         product.getProductCode(),
                         product.getName(),
                         product.getCategoryName(),
@@ -219,7 +218,7 @@ public class ProductManagementPanel extends JPanel {
 
     private void openSizeDialog() {
         if (selectedId <= 0) {
-            UiUtils.showInfo(this, "Chọn sản phẩm trước khi quản lý size.");
+            UiUtils.showInfo(this, "Chọn sản phẩm trước khi quản lý cỡ và giá.");
             return;
         }
         SizeManagementDialog dialog = new SizeManagementDialog(javax.swing.SwingUtilities.getWindowAncestor(this), selectedId, controller);

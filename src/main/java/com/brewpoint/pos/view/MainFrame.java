@@ -18,6 +18,8 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class MainFrame extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -28,6 +30,7 @@ public class MainFrame extends JFrame {
     private final transient Employee currentEmployee;
     private final JLabel clockLabel = new JLabel();
     private final JLabel sessionLabel = new JLabel();
+    private final Map<String, JButton> menuButtons = new LinkedHashMap<String, JButton>();
 
     public MainFrame(User currentUser, Employee currentEmployee) {
         this.currentUser = currentUser;
@@ -43,6 +46,7 @@ public class MainFrame extends JFrame {
         contentPanel.setBackground(UIConstants.BG_APP);
         add(contentPanel, BorderLayout.CENTER);
         buildContent();
+        selectMenu("pos");
         startClock();
     }
 
@@ -82,7 +86,7 @@ public class MainFrame extends JFrame {
         addMenuButton(menu, "Hóa đơn", "orders", true);
         addMenuButton(menu, "Danh mục", "categories", isAdmin());
         addMenuButton(menu, "Sản phẩm", "products", isAdmin());
-        addMenuButton(menu, "Topping", "toppings", isAdmin());
+        addMenuButton(menu, "Topping bổ sung", "toppings", isAdmin());
         addMenuButton(menu, "Nhân viên", "employees", isAdmin());
         addMenuButton(menu, "Thống kê", "statistics", isAdmin());
         JButton logoutButton = UiUtils.dangerButton("Đăng xuất");
@@ -97,8 +101,20 @@ public class MainFrame extends JFrame {
     private void addMenuButton(JPanel menu, String text, String cardName, boolean enabled) {
         JButton button = UiUtils.secondaryButton(text);
         button.setEnabled(enabled);
-        button.addActionListener(e -> cardLayout.show(contentPanel, cardName));
+        button.addActionListener(e -> selectMenu(cardName));
+        menuButtons.put(cardName, button);
         menu.add(button);
+    }
+
+    private void selectMenu(String cardName) {
+        JButton button = menuButtons.get(cardName);
+        if (button == null || !button.isEnabled()) {
+            return;
+        }
+        cardLayout.show(contentPanel, cardName);
+        for (Map.Entry<String, JButton> entry : menuButtons.entrySet()) {
+            UiUtils.setNavButtonSelected(entry.getValue(), cardName.equals(entry.getKey()));
+        }
     }
 
     private void buildContent() {
@@ -110,7 +126,6 @@ public class MainFrame extends JFrame {
         contentPanel.add(new ToppingManagementPanel(), "toppings");
         contentPanel.add(new EmployeeManagementPanel(currentUser.getUserId()), "employees");
         contentPanel.add(new StatisticsPanel(), "statistics");
-        cardLayout.show(contentPanel, "pos");
     }
 
     private boolean isAdmin() {

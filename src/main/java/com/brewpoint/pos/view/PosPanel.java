@@ -18,6 +18,8 @@ import com.brewpoint.pos.model.CheckoutResult;
 
 import com.brewpoint.pos.model.PaymentInput;
 
+import com.brewpoint.pos.model.PaymentMethod;
+
 import com.brewpoint.pos.model.Product;
 
 import com.brewpoint.pos.model.ToppingSnapshot;
@@ -144,7 +146,7 @@ public class PosPanel extends JPanel {
 
     private final JTable cartTable = new JTable(cartModel);
 
-    private final JLabel totalLabel = new JLabel("0 ₫", SwingConstants.RIGHT);
+    private final JLabel totalLabel = new JLabel("Tổng tiền: 0 ₫", SwingConstants.RIGHT);
 
     private final transient List<CartLine> cartLines = new ArrayList<CartLine>();
 
@@ -804,7 +806,7 @@ public class PosPanel extends JPanel {
 
         }
 
-        totalLabel.setText(MoneyUtils.formatVnd(total));
+        totalLabel.setText("Tổng tiền: " + MoneyUtils.formatVnd(total));
 
     }
 
@@ -1016,7 +1018,7 @@ public class PosPanel extends JPanel {
 
             CheckoutResult result = checkoutController.checkout(request);
 
-            UiUtils.showInfo(this, "Đã lưu hóa đơn " + result.getOrderCode() + ". Tiền thừa: " + MoneyUtils.formatVnd(result.getChangeAmount()));
+            UiUtils.showInfo(this, buildCheckoutSuccessMessage(result, paymentInput));
 
             cartLines.clear();
 
@@ -1034,6 +1036,14 @@ public class PosPanel extends JPanel {
 
         }
 
+    }
+
+    private String buildCheckoutSuccessMessage(CheckoutResult result, PaymentInput paymentInput) {
+        String base = "Đã lưu hóa đơn " + result.getOrderCode() + ".";
+        if (paymentInput != null && paymentInput.getMethod() == PaymentMethod.CASH) {
+            return base + " Tiền thừa: " + MoneyUtils.formatVnd(result.getChangeAmount());
+        }
+        return base + " Thanh toán chuyển khoản thành công.";
     }
 
 }
