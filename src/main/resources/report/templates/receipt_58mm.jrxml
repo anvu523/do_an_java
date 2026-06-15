@@ -72,15 +72,15 @@
                 </textElement>
                 <textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
             </textField>
-            <textField textAdjust="StretchHeight">
-                <reportElement x="0" y="10" width="156" height="10"/>
+            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                <reportElement positionType="Float" x="0" y="10" width="156" height="10" isRemoveLineWhenBlank="true"/>
                 <textElement>
                     <font fontName="DejaVu Sans" size="6" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{options}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="0" y="22" width="156" height="10"/>
+                <reportElement positionType="Float" x="0" y="22" width="156" height="10"/>
                 <textElement>
                     <font fontName="DejaVu Sans" size="7" pdfFontName="DejaVu Sans" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
                 </textElement>
