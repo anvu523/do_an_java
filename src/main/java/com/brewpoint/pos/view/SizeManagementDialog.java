@@ -2,14 +2,15 @@ package com.brewpoint.pos.view;
 
 import com.brewpoint.pos.controller.CatalogController;
 import com.brewpoint.pos.model.ProductSize;
+import com.brewpoint.pos.util.FormLayout;
 import com.brewpoint.pos.util.MoneyUtils;
+import com.brewpoint.pos.util.UIConstants;
 import com.brewpoint.pos.util.UiUtils;
 import com.brewpoint.pos.util.ValidationUtils;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -17,7 +18,6 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
-import java.awt.FlowLayout;
 import java.awt.Window;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -47,35 +47,38 @@ public class SizeManagementDialog extends JDialog {
         super(owner, "Quản lý size", Dialog.ModalityType.APPLICATION_MODAL);
         this.productId = productId;
         this.controller = controller;
-        setSize(620, 420);
+        setSize(680, 480);
         setLocationRelativeTo(owner);
-        setLayout(new BorderLayout(8, 8));
-        add(buildForm(), BorderLayout.NORTH);
+        getContentPane().setBackground(UIConstants.BG_APP);
+        JPanel root = new JPanel(new BorderLayout(UIConstants.SPACING_MD, UIConstants.SPACING_MD));
+        root.setBackground(UIConstants.BG_APP);
+        root.setBorder(UiUtils.emptyBorder(UIConstants.SPACING_MD));
+        setLayout(new BorderLayout());
+        add(root, BorderLayout.CENTER);
+        root.add(buildForm(), BorderLayout.NORTH);
         UiUtils.configureTable(table);
         table.getSelectionModel().addListSelectionListener(e -> selectRow());
-        add(new JScrollPane(table), BorderLayout.CENTER);
+        root.add(new JScrollPane(table), BorderLayout.CENTER);
         loadData();
     }
 
     private JPanel buildForm() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.add(new JLabel("Code"));
-        panel.add(codeField);
-        panel.add(new JLabel("Tên"));
-        panel.add(nameField);
-        panel.add(new JLabel("Giá"));
-        panel.add(priceField);
-        panel.add(activeBox);
+        UiUtils.styleField(codeField);
+        UiUtils.styleField(nameField);
+        UiUtils.styleField(priceField);
+        activeBox.setFont(UIConstants.font(UIConstants.FONT_LABEL));
         JButton saveButton = UiUtils.primaryButton("Lưu");
         saveButton.addActionListener(e -> save());
-        JButton deactivateButton = new JButton("Ngừng bán");
+        JButton deactivateButton = UiUtils.dangerButton("Ngừng bán");
         deactivateButton.addActionListener(e -> deactivate());
-        JButton clearButton = new JButton("Làm mới");
+        JButton clearButton = UiUtils.secondaryButton("Làm mới");
         clearButton.addActionListener(e -> clearForm());
-        panel.add(saveButton);
-        panel.add(deactivateButton);
-        panel.add(clearButton);
-        return panel;
+        return new FormLayout()
+                .addRow("Code", codeField)
+                .addRow("Tên", nameField)
+                .addRow("Giá", priceField)
+                .addFullWidth(activeBox)
+                .buildCard(saveButton, deactivateButton, clearButton);
     }
 
     private void loadData() {

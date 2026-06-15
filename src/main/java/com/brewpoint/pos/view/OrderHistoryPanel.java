@@ -2,11 +2,12 @@ package com.brewpoint.pos.view;
 
 import com.brewpoint.pos.controller.OrderController;
 import com.brewpoint.pos.model.OrderSummary;
+import com.brewpoint.pos.util.FormLayout;
 import com.brewpoint.pos.util.MoneyUtils;
+import com.brewpoint.pos.util.UIConstants;
 import com.brewpoint.pos.util.UiUtils;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -43,7 +44,8 @@ public class OrderHistoryPanel extends JPanel {
     public OrderHistoryPanel(boolean admin, Integer employeeId) {
         this.admin = admin;
         this.employeeId = employeeId;
-        setLayout(new BorderLayout(8, 8));
+        UiUtils.styleContentPanel(this);
+        setLayout(new BorderLayout(UIConstants.SPACING_MD, UIConstants.SPACING_MD));
         add(buildSearch(), BorderLayout.NORTH);
         UiUtils.configureTable(table);
         add(new JScrollPane(table), BorderLayout.CENTER);
@@ -52,20 +54,19 @@ public class OrderHistoryPanel extends JPanel {
     }
 
     private JPanel buildSearch() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.add(new JLabel("Mã"));
-        panel.add(codeField);
-        panel.add(new JLabel("Ngày yyyy-MM-dd"));
-        panel.add(dateField);
+        UiUtils.styleField(codeField);
+        UiUtils.styleField(dateField);
         JButton searchButton = UiUtils.primaryButton("Tìm");
         searchButton.addActionListener(e -> loadData());
-        panel.add(searchButton);
-        return panel;
+        return new FormLayout()
+                .addRow("Mã hóa đơn", codeField)
+                .addRow("Ngày yyyy-MM-dd", dateField)
+                .buildCard(searchButton);
     }
 
     private JPanel buildBottom() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton detailButton = new JButton("Xem chi tiết");
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIConstants.SPACING_SM, UIConstants.SPACING_SM));
+        JButton detailButton = UiUtils.secondaryButton("Xem chi tiết");
         detailButton.addActionListener(e -> showDetail());
         panel.add(detailButton);
         return panel;

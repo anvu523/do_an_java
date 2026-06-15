@@ -4,8 +4,10 @@ import com.brewpoint.pos.controller.CatalogController;
 import com.brewpoint.pos.model.Category;
 import com.brewpoint.pos.model.Product;
 import com.brewpoint.pos.model.ProductStatus;
+import com.brewpoint.pos.util.FormLayout;
 import com.brewpoint.pos.util.ImageService;
 import com.brewpoint.pos.util.MoneyUtils;
+import com.brewpoint.pos.util.UIConstants;
 import com.brewpoint.pos.util.UiUtils;
 import com.brewpoint.pos.util.ValidationUtils;
 
@@ -20,8 +22,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -52,7 +52,8 @@ public class ProductManagementPanel extends JPanel {
     private int selectedId;
 
     public ProductManagementPanel() {
-        setLayout(new BorderLayout(8, 8));
+        UiUtils.styleContentPanel(this);
+        setLayout(new BorderLayout(UIConstants.SPACING_MD, UIConstants.SPACING_MD));
         add(buildForm(), BorderLayout.NORTH);
         UiUtils.configureTable(table);
         table.getSelectionModel().addListSelectionListener(e -> selectRow());
@@ -62,50 +63,48 @@ public class ProductManagementPanel extends JPanel {
     }
 
     private JPanel buildForm() {
-        JPanel form = new JPanel(new BorderLayout());
-        JPanel fields = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        fields.add(new JLabel("Code"));
-        fields.add(codeField);
-        fields.add(new JLabel("Tên"));
-        fields.add(nameField);
-        fields.add(new JLabel("Danh mục"));
-        fields.add(categoryCombo);
-        fields.add(new JLabel("Tồn"));
-        fields.add(stockField);
-        fields.add(activeBox);
-        form.add(fields, BorderLayout.NORTH);
+        UiUtils.styleField(codeField);
+        UiUtils.styleField(nameField);
+        UiUtils.styleField(stockField);
+        UiUtils.styleField(imagePathField);
+        categoryCombo.setFont(UIConstants.font(UIConstants.FONT_INPUT));
+        categoryCombo.setPreferredSize(new java.awt.Dimension(220, UIConstants.FORM_FIELD_HEIGHT));
+        activeBox.setFont(UIConstants.font(UIConstants.FONT_LABEL));
 
-        JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        previewLabel.setIcon(imageService.placeholder(120, 90));
-        imagePanel.add(previewLabel);
-        imagePanel.add(new JLabel("Ảnh"));
-        imagePanel.add(imagePathField);
-        JButton chooseButton = new JButton("Chọn ảnh");
+        JPanel imageRow = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, UIConstants.SPACING_SM, 0));
+        imageRow.setOpaque(false);
+        previewLabel.setIcon(imageService.placeholder(160, 120));
+        imageRow.add(previewLabel);
+        JButton chooseButton = UiUtils.secondaryButton("Chọn ảnh");
         chooseButton.addActionListener(e -> chooseImage());
-        JButton removeImageButton = new JButton("Xóa ảnh");
+        JButton removeImageButton = UiUtils.dangerButton("Xóa ảnh");
         removeImageButton.addActionListener(e -> {
             imagePathField.setText("");
-            previewLabel.setIcon(imageService.placeholder(120, 90));
+            previewLabel.setIcon(imageService.placeholder(160, 120));
         });
-        imagePanel.add(chooseButton);
-        imagePanel.add(removeImageButton);
-        form.add(imagePanel, BorderLayout.CENTER);
+        imageRow.add(chooseButton);
+        imageRow.add(removeImageButton);
 
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton saveButton = UiUtils.primaryButton("Lưu");
         saveButton.addActionListener(e -> save());
-        JButton deactivateButton = new JButton("Ngừng bán");
+        JButton deactivateButton = UiUtils.dangerButton("Ngừng bán");
         deactivateButton.addActionListener(e -> deactivate());
-        JButton sizeButton = new JButton("Quản lý size");
+        JButton sizeButton = UiUtils.secondaryButton("Quản lý size");
         sizeButton.addActionListener(e -> openSizeDialog());
-        JButton clearButton = new JButton("Làm mới");
+        JButton clearButton = UiUtils.secondaryButton("Làm mới");
         clearButton.addActionListener(e -> clearForm());
-        buttons.add(saveButton);
-        buttons.add(deactivateButton);
-        buttons.add(sizeButton);
-        buttons.add(clearButton);
-        form.add(buttons, BorderLayout.SOUTH);
-        return form;
+
+        JPanel fields = new FormLayout()
+                .addRow("Code", codeField)
+                .addRow("Tên", nameField)
+                .addRow("Danh mục", categoryCombo)
+                .addRow("Tồn kho", stockField)
+                .addRow("Đường dẫn ảnh", imagePathField)
+                .addFullWidth(activeBox)
+                .addFullWidth(imageRow)
+                .build();
+
+        return UiUtils.wrapFormCard(fields, saveButton, deactivateButton, sizeButton, clearButton);
     }
 
     private void loadCategories() {
@@ -154,7 +153,7 @@ public class ProductManagementPanel extends JPanel {
         imagePathField.setText(product.getImagePath() == null ? "" : product.getImagePath());
         activeBox.setSelected(product.getStatus().isActive());
         selectCategory(product.getCategoryId());
-        previewLabel.setIcon(imageService.loadThumbnail(product.getImagePath(), 120, 90));
+        previewLabel.setIcon(imageService.loadThumbnail(product.getImagePath(), 160, 120));
     }
 
     private void selectCategory(int categoryId) {
@@ -174,7 +173,7 @@ public class ProductManagementPanel extends JPanel {
                 File file = chooser.getSelectedFile();
                 String path = imageService.copyProductImage(file);
                 imagePathField.setText(path);
-                previewLabel.setIcon(imageService.loadThumbnail(path, 120, 90));
+                previewLabel.setIcon(imageService.loadThumbnail(path, 160, 120));
             } catch (RuntimeException ex) {
                 UiUtils.showError(this, ex);
             }
@@ -235,7 +234,7 @@ public class ProductManagementPanel extends JPanel {
         stockField.setText("0");
         imagePathField.setText("");
         activeBox.setSelected(true);
-        previewLabel.setIcon(imageService.placeholder(120, 90));
+        previewLabel.setIcon(imageService.placeholder(160, 120));
         if (categoryCombo.getItemCount() > 0) {
             categoryCombo.setSelectedIndex(0);
         }

@@ -1,3 +1,6 @@
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 CREATE DATABASE IF NOT EXISTS brewpoint_pos
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
@@ -173,18 +176,18 @@ INSERT INTO categories (name, display_order, active) VALUES
 ('Đá xay', 5, 1);
 
 INSERT INTO products (category_id, product_code, name, image_path, stock_quantity, active) VALUES
-(1, 'CF-DEN-DA', 'Cà phê phin đen đá', NULL, 80, 1),
-(1, 'CF-SUA-DA', 'Cà phê sữa đá', NULL, 80, 1),
-(1, 'BAC-XIU', 'Bạc xỉu', NULL, 70, 1),
-(2, 'TRA-DAO-CAM-SA', 'Trà đào cam sả', NULL, 60, 1),
-(2, 'TRA-SEN-VANG', 'Trà sen vàng', NULL, 55, 1),
-(2, 'TRA-VAI', 'Trà vải', NULL, 60, 1),
-(3, 'TS-TC-DD', 'Trà sữa trân châu đường đen', NULL, 65, 1),
-(3, 'OLONG-SUA', 'Ô long sữa', NULL, 65, 1),
-(3, 'HONG-TRA-SUA', 'Hồng trà sữa', NULL, 65, 1),
-(4, 'MATCHA-LATTE', 'Matcha latte', NULL, 45, 1),
-(4, 'CACAO-SUA-DA', 'Cacao sữa đá', NULL, 50, 1),
-(5, 'MATCHA-DA-XAY', 'Matcha đá xay', NULL, 35, 1);
+(1, 'CF-DEN-DA', 'Cà phê phin đen đá', 'data/product-images/cf-den-da.jpg', 80, 1),
+(1, 'CF-SUA-DA', 'Cà phê sữa đá', 'data/product-images/cf-sua-da.jpg', 80, 1),
+(1, 'BAC-XIU', 'Bạc xỉu', 'data/product-images/bac-xiu.jpg', 70, 1),
+(2, 'TRA-DAO-CAM-SA', 'Trà đào cam sả', 'data/product-images/tra-dao-cam-sa.jpg', 60, 1),
+(2, 'TRA-SEN-VANG', 'Trà sen vàng', 'data/product-images/tra-sen-vang.jpg', 55, 1),
+(2, 'TRA-VAI', 'Trà vải', 'data/product-images/tra-vai.jpg', 60, 1),
+(3, 'TS-TC-DD', 'Trà sữa trân châu đường đen', 'data/product-images/ts-tc-dd.png', 65, 1),
+(3, 'OLONG-SUA', 'Ô long sữa', 'data/product-images/olong-sua.png', 65, 1),
+(3, 'HONG-TRA-SUA', 'Hồng trà sữa', 'data/product-images/hong-tra-sua.png', 65, 1),
+(4, 'MATCHA-LATTE', 'Matcha latte', 'data/product-images/matcha-latte.jpg', 45, 1),
+(4, 'CACAO-SUA-DA', 'Cacao sữa đá', 'data/product-images/cacao-sua-da.jpg', 50, 1),
+(5, 'MATCHA-DA-XAY', 'Matcha đá xay', 'data/product-images/matcha-da-xay.png', 35, 1);
 
 INSERT INTO product_sizes (product_id, size_code, size_name, sale_price, active) VALUES
 (1, 'STD', 'Tiêu chuẩn', 25000, 1),

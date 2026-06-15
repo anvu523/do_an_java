@@ -2,7 +2,9 @@ package com.brewpoint.pos.view;
 
 import com.brewpoint.pos.model.PaymentInput;
 import com.brewpoint.pos.model.PaymentMethod;
+import com.brewpoint.pos.util.FormLayout;
 import com.brewpoint.pos.util.MoneyUtils;
+import com.brewpoint.pos.util.UIConstants;
 import com.brewpoint.pos.util.UiUtils;
 import com.brewpoint.pos.util.ValidationException;
 import com.brewpoint.pos.util.ValidationUtils;
@@ -16,7 +18,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Window;
 import java.math.BigDecimal;
@@ -34,11 +35,16 @@ public class PaymentDialog extends JDialog {
     public PaymentDialog(Window owner, BigDecimal total) {
         super(owner, "Thanh toán", Dialog.ModalityType.APPLICATION_MODAL);
         this.total = total;
-        setSize(420, 300);
+        setSize(480, 380);
         setLocationRelativeTo(owner);
-        setLayout(new BorderLayout(10, 10));
+        getContentPane().setBackground(UIConstants.BG_PANEL);
+        setLayout(new BorderLayout());
         add(buildContent(), BorderLayout.CENTER);
-        add(buildBottom(), BorderLayout.SOUTH);
+        javax.swing.JButton cancelButton = UiUtils.secondaryButton("Hủy");
+        cancelButton.addActionListener(e -> dispose());
+        javax.swing.JButton confirmButton = UiUtils.primaryButton("Xác nhận");
+        confirmButton.addActionListener(e -> accept());
+        add(UiUtils.dialogFooter(cancelButton, confirmButton), BorderLayout.SOUTH);
     }
 
     public PaymentInput getPaymentInput() {
@@ -46,31 +52,36 @@ public class PaymentDialog extends JDialog {
     }
 
     private JPanel buildContent() {
-        JPanel panel = new JPanel(new GridLayout(0, 1, 8, 8));
+        JPanel wrapper = new JPanel(new BorderLayout());
+        UiUtils.styleDialogContent(wrapper);
+
         JLabel totalLabel = new JLabel("Tổng tiền: " + MoneyUtils.formatVnd(total));
-        totalLabel.setFont(totalLabel.getFont().deriveFont(Font.BOLD, 30f));
-        panel.add(totalLabel);
+        totalLabel.setFont(UIConstants.fontBold(UIConstants.FONT_TOTAL));
+        totalLabel.setForeground(UIConstants.PRIMARY);
+        wrapper.add(totalLabel, BorderLayout.NORTH);
+
+        JPanel methodPanel = new JPanel(new GridLayout(1, 2, UIConstants.SPACING_SM, 0));
+        methodPanel.setOpaque(false);
         ButtonGroup group = new ButtonGroup();
         group.add(cashRadio);
         group.add(transferRadio);
-        panel.add(cashRadio);
-        panel.add(transferRadio);
-        panel.add(new JLabel("Tiền khách đưa"));
-        receivedField.setText(total.toPlainString());
-        panel.add(receivedField);
-        panel.add(transferConfirmedBox);
-        return panel;
-    }
+        cashRadio.setFont(UIConstants.font(UIConstants.FONT_LABEL));
+        transferRadio.setFont(UIConstants.font(UIConstants.FONT_LABEL));
+        methodPanel.add(cashRadio);
+        methodPanel.add(transferRadio);
 
-    private JPanel buildBottom() {
-        JPanel bottom = new JPanel();
-        javax.swing.JButton cancelButton = new javax.swing.JButton("Hủy");
-        cancelButton.addActionListener(e -> dispose());
-        javax.swing.JButton confirmButton = UiUtils.primaryButton("Xác nhận");
-        confirmButton.addActionListener(e -> accept());
-        bottom.add(cancelButton);
-        bottom.add(confirmButton);
-        return bottom;
+        UiUtils.styleField(receivedField);
+        receivedField.setText(total.toPlainString());
+        transferConfirmedBox.setFont(UIConstants.font(UIConstants.FONT_LABEL));
+
+        JPanel form = new FormLayout()
+                .addFullWidth(methodPanel)
+                .addRow("Tiền khách đưa", receivedField)
+                .addFullWidth(transferConfirmedBox)
+                .build();
+        form.setOpaque(false);
+        wrapper.add(form, BorderLayout.CENTER);
+        return wrapper;
     }
 
     private void accept() {

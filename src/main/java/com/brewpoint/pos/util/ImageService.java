@@ -2,8 +2,6 @@ package com.brewpoint.pos.util;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -61,40 +59,65 @@ public class ImageService {
     }
 
     public ImageIcon loadThumbnail(String relativePath, int width, int height) {
+        return loadThumbnailFitted(relativePath, width, height);
+    }
+
+    public ImageIcon loadThumbnailFitted(String relativePath, int maxWidth, int maxHeight) {
         if (relativePath == null || relativePath.trim().isEmpty()) {
-            return placeholder(width, height);
+            return placeholder(maxWidth, maxHeight);
         }
         Path path = Paths.get(relativePath);
-        String key = relativePath + "|" + width + "|" + height + "|" + lastModified(path);
+        String key = relativePath + "|fit|" + maxWidth + "|" + maxHeight + "|" + lastModified(path);
         ImageIcon cached = cache.get(key);
         if (cached != null) {
             return cached;
         }
         try {
             if (!Files.exists(path)) {
-                return placeholder(width, height);
+                return placeholder(maxWidth, maxHeight);
             }
             BufferedImage image = ImageIO.read(path.toFile());
             if (image == null) {
-                return placeholder(width, height);
+                return placeholder(maxWidth, maxHeight);
             }
-            Image scaled = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-            ImageIcon icon = new ImageIcon(scaled);
+            ImageIcon icon = new ImageIcon(scaleToFit(image, maxWidth, maxHeight));
             cache.put(key, icon);
             return icon;
         } catch (IOException ex) {
-            return placeholder(width, height);
+            return placeholder(maxWidth, maxHeight);
         }
+    }
+
+    private BufferedImage scaleToFit(BufferedImage source, int maxWidth, int maxHeight) {
+        int sourceWidth = source.getWidth();
+        int sourceHeight = source.getHeight();
+        double widthRatio = (double) maxWidth / (double) sourceWidth;
+        double heightRatio = (double) maxHeight / (double) sourceHeight;
+        double ratio = Math.min(widthRatio, heightRatio);
+        int targetWidth = Math.max(1, (int) Math.round(sourceWidth * ratio));
+        int targetHeight = Math.max(1, (int) Math.round(sourceHeight * ratio));
+
+        BufferedImage canvas = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = canvas.createGraphics();
+        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics.setColor(UIConstants.PLACEHOLDER_BG);
+        graphics.fillRect(0, 0, maxWidth, maxHeight);
+        int x = (maxWidth - targetWidth) / 2;
+        int y = (maxHeight - targetHeight) / 2;
+        graphics.drawImage(source.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH), x, y, null);
+        graphics.dispose();
+        return canvas;
     }
 
     public ImageIcon placeholder(int width, int height) {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setColor(new Color(232, 236, 240));
+        graphics.setColor(UIConstants.PLACEHOLDER_BG);
         graphics.fillRect(0, 0, width, height);
-        graphics.setColor(new Color(82, 91, 103));
-        graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        graphics.setColor(UIConstants.TEXT_MUTED);
+        graphics.setFont(UIConstants.fontBold(14f));
         String text = "Chưa có ảnh";
         int textWidth = graphics.getFontMetrics().stringWidth(text);
         graphics.drawString(text, Math.max(8, (width - textWidth) / 2), height / 2);

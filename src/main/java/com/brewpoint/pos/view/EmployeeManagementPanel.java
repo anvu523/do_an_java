@@ -3,19 +3,19 @@ package com.brewpoint.pos.view;
 import com.brewpoint.pos.controller.EmployeeController;
 import com.brewpoint.pos.model.Employee;
 import com.brewpoint.pos.model.Role;
+import com.brewpoint.pos.util.FormLayout;
+import com.brewpoint.pos.util.UIConstants;
 import com.brewpoint.pos.util.UiUtils;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,8 @@ public class EmployeeManagementPanel extends JPanel {
 
     public EmployeeManagementPanel(int currentUserId) {
         this.currentUserId = currentUserId;
-        setLayout(new BorderLayout(8, 8));
+        UiUtils.styleContentPanel(this);
+        setLayout(new BorderLayout(UIConstants.SPACING_MD, UIConstants.SPACING_MD));
         add(buildForm(), BorderLayout.NORTH);
         UiUtils.configureTable(table);
         table.getSelectionModel().addListSelectionListener(e -> selectRow());
@@ -56,29 +57,30 @@ public class EmployeeManagementPanel extends JPanel {
     }
 
     private JPanel buildForm() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.add(new JLabel("User"));
-        panel.add(usernameField);
-        panel.add(new JLabel("Mật khẩu"));
-        panel.add(passwordField);
-        panel.add(new JLabel("Họ tên"));
-        panel.add(fullNameField);
-        panel.add(new JLabel("SĐT"));
-        panel.add(phoneField);
-        panel.add(new JLabel("Email"));
-        panel.add(emailField);
-        panel.add(roleCombo);
-        panel.add(activeBox);
+        UiUtils.styleField(usernameField);
+        passwordField.setFont(UIConstants.font(UIConstants.FONT_INPUT));
+        passwordField.setPreferredSize(new java.awt.Dimension(160, UIConstants.FORM_FIELD_HEIGHT));
+        UiUtils.styleField(fullNameField);
+        UiUtils.styleField(phoneField);
+        UiUtils.styleField(emailField);
+        roleCombo.setFont(UIConstants.font(UIConstants.FONT_INPUT));
+        roleCombo.setPreferredSize(new java.awt.Dimension(160, UIConstants.FORM_FIELD_HEIGHT));
+        activeBox.setFont(UIConstants.font(UIConstants.FONT_LABEL));
         JButton saveButton = UiUtils.primaryButton("Lưu");
         saveButton.addActionListener(e -> save());
-        JButton resetButton = new JButton("Reset mật khẩu");
+        JButton resetButton = UiUtils.secondaryButton("Reset mật khẩu");
         resetButton.addActionListener(e -> resetPassword());
-        JButton clearButton = new JButton("Làm mới");
+        JButton clearButton = UiUtils.secondaryButton("Làm mới");
         clearButton.addActionListener(e -> clearForm());
-        panel.add(saveButton);
-        panel.add(resetButton);
-        panel.add(clearButton);
-        return panel;
+        return new FormLayout()
+                .addRow("Tên đăng nhập", usernameField)
+                .addRow("Mật khẩu", passwordField)
+                .addRow("Họ tên", fullNameField)
+                .addRow("SĐT", phoneField)
+                .addRow("Email", emailField)
+                .addRow("Vai trò", roleCombo)
+                .addFullWidth(activeBox)
+                .buildCard(saveButton, resetButton, clearButton);
     }
 
     private void loadData() {

@@ -5,3 +5,10 @@ lib/
 *.log
 .idea/
 *.iml
+
+# Markdown docs/notes generated while working
+*.md
+!README.md
+
+# Cursor/agent/prompt working notes
+.cursor/

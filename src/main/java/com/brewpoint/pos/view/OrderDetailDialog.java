@@ -5,8 +5,11 @@ import com.brewpoint.pos.model.OrderItemDetail;
 import com.brewpoint.pos.model.OrderSummary;
 import com.brewpoint.pos.model.ToppingSnapshot;
 import com.brewpoint.pos.util.MoneyUtils;
+import com.brewpoint.pos.util.UIConstants;
 import com.brewpoint.pos.util.UiUtils;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -14,6 +17,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
+import java.awt.FlowLayout;
 import java.awt.Window;
 import java.sql.SQLException;
 import java.util.List;
@@ -33,22 +37,46 @@ public class OrderDetailDialog extends JDialog {
 
     public OrderDetailDialog(Window owner, OrderSummary order, OrderController controller) {
         super(owner, "Chi tiết " + order.getOrderCode(), Dialog.ModalityType.APPLICATION_MODAL);
-        setSize(860, 440);
+        setSize(960, 500);
         setLocationRelativeTo(owner);
+        getContentPane().setBackground(UIConstants.BG_PANEL);
         setLayout(new BorderLayout());
+        JPanel content = new JPanel(new BorderLayout(UIConstants.SPACING_MD, UIConstants.SPACING_MD));
+        UiUtils.styleDialogContent(content);
         UiUtils.configureTable(table);
-        add(new JScrollPane(table), BorderLayout.CENTER);
-        JPanel info = new JPanel();
-        info.add(new javax.swing.JLabel("Tổng: " + MoneyUtils.formatVnd(order.getTotalAmount())));
-        info.add(new javax.swing.JLabel("Thanh toán: " + order.getPaymentMethod().getDisplayName()));
+        content.add(buildInfoPanel(order), BorderLayout.NORTH);
+        content.add(new JScrollPane(table), BorderLayout.CENTER);
+        add(content, BorderLayout.CENTER);
+        JButton closeButton = UiUtils.secondaryButton("Đóng");
+        closeButton.addActionListener(e -> dispose());
+        add(UiUtils.dialogFooter(null, closeButton), BorderLayout.SOUTH);
+        loadData(order, controller);
+    }
+
+    private JPanel buildInfoPanel(OrderSummary order) {
+        JPanel info = new JPanel(new FlowLayout(FlowLayout.LEFT, UIConstants.SPACING_LG, UIConstants.SPACING_SM));
+        info.setOpaque(false);
+        info.add(buildInfoLabel("Tổng: " + MoneyUtils.formatVnd(order.getTotalAmount()), true));
+        info.add(buildInfoLabel("Thanh toán: " + order.getPaymentMethod().getDisplayName(), false));
         if (order.getReceivedAmount() != null) {
-            info.add(new javax.swing.JLabel("Khách đưa: " + MoneyUtils.formatVnd(order.getReceivedAmount())));
+            info.add(buildInfoLabel("Khách đưa: " + MoneyUtils.formatVnd(order.getReceivedAmount()), false));
         }
         if (order.getChangeAmount() != null) {
-            info.add(new javax.swing.JLabel("Tiền thừa: " + MoneyUtils.formatVnd(order.getChangeAmount())));
+            info.add(buildInfoLabel("Tiền thừa: " + MoneyUtils.formatVnd(order.getChangeAmount()), false));
         }
-        add(info, BorderLayout.NORTH);
-        loadData(order, controller);
+        return info;
+    }
+
+    private JLabel buildInfoLabel(String text, boolean emphasize) {
+        JLabel label = new JLabel(text);
+        if (emphasize) {
+            label.setFont(UIConstants.fontBold(UIConstants.FONT_SECTION_TITLE));
+            label.setForeground(UIConstants.PRIMARY);
+        } else {
+            label.setFont(UIConstants.font(UIConstants.FONT_LABEL));
+            label.setForeground(UIConstants.TEXT_PRIMARY);
+        }
+        return label;
     }
 
     private void loadData(OrderSummary order, OrderController controller) {
