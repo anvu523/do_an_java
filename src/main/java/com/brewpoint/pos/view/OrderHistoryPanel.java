@@ -2,11 +2,12 @@ package com.brewpoint.pos.view;
 
 import com.brewpoint.pos.controller.OrderController;
 import com.brewpoint.pos.model.OrderSummary;
+import com.brewpoint.pos.util.DateUtils;
 import com.brewpoint.pos.util.MoneyUtils;
+import com.brewpoint.pos.util.UIConstants;
 import com.brewpoint.pos.util.UiUtils;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -17,7 +18,6 @@ import java.awt.FlowLayout;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class OrderHistoryPanel extends JPanel {
     private final transient OrderController controller = new OrderController();
     private final boolean admin;
     private final Integer employeeId;
-    private final JTextField codeField = new JTextField(12);
+    private final JTextField codeField = new JTextField(14);
     private final JTextField dateField = new JTextField(10);
     private final DefaultTableModel model = new DefaultTableModel(
             new Object[]{"Mã hóa đơn", "Thu ngân", "Thời gian", "Thanh toán", "Tổng", "Trạng thái"}, 0) {
@@ -43,7 +43,8 @@ public class OrderHistoryPanel extends JPanel {
     public OrderHistoryPanel(boolean admin, Integer employeeId) {
         this.admin = admin;
         this.employeeId = employeeId;
-        setLayout(new BorderLayout(8, 8));
+        UiUtils.styleContentPanel(this);
+        setLayout(new BorderLayout(UIConstants.SPACING_MD, UIConstants.SPACING_MD));
         add(buildSearch(), BorderLayout.NORTH);
         UiUtils.configureTable(table);
         add(new JScrollPane(table), BorderLayout.CENTER);
@@ -52,20 +53,28 @@ public class OrderHistoryPanel extends JPanel {
     }
 
     private JPanel buildSearch() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.add(new JLabel("Mã"));
-        panel.add(codeField);
-        panel.add(new JLabel("Ngày yyyy-MM-dd"));
-        panel.add(dateField);
-        JButton searchButton = UiUtils.primaryButton("Tìm");
+        JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, UIConstants.SPACING_MD, UIConstants.SPACING_SM));
+        row.setOpaque(false);
+
+        row.add(UiUtils.formLabel("Mã hóa đơn"));
+        UiUtils.styleCompactField(codeField);
+        row.add(codeField);
+
+        row.add(UiUtils.formLabel("Ngày lập hóa đơn (dd/MM/yyyy)"));
+        dateField.setToolTipText("Để trống nếu không lọc theo ngày");
+        UiUtils.styleCompactField(dateField);
+        row.add(dateField);
+
+        JButton searchButton = UiUtils.primaryButton("Tìm kiếm");
         searchButton.addActionListener(e -> loadData());
-        panel.add(searchButton);
-        return panel;
+        row.add(searchButton);
+
+        return UiUtils.wrapFormCard(row);
     }
 
     private JPanel buildBottom() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton detailButton = new JButton("Xem chi tiết");
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIConstants.SPACING_SM, UIConstants.SPACING_SM));
+        JButton detailButton = UiUtils.secondaryButton("Xem chi tiết");
         detailButton.addActionListener(e -> showDetail());
         panel.add(detailButton);
         return panel;
@@ -95,15 +104,7 @@ public class OrderHistoryPanel extends JPanel {
     }
 
     private LocalDate parseDate() {
-        String value = dateField.getText() == null ? "" : dateField.getText().trim();
-        if (value.isEmpty()) {
-            return null;
-        }
-        try {
-            return LocalDate.parse(value);
-        } catch (DateTimeParseException ex) {
-            throw new IllegalArgumentException("Ngày phải có dạng yyyy-MM-dd.");
-        }
+        return DateUtils.parseOptional(dateField.getText());
     }
 
     private void showDetail() {

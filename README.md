@@ -42,7 +42,12 @@ powershell -ExecutionPolicy Bypass -File scripts/compile-javac.ps1
 | Vai trò | Tên đăng nhập | Mật khẩu |
 |---|---|---|
 | Admin | `admin` | `admin123` |
-| Cashier | `cashier` | `cashier123` |
+| Admin | `admin` | `admin123` |
+| Cashier 1 | `cashier01` | `cashier123` |
+| Cashier 2 | `cashier02` | `cashier123` |
+| Cashier 3 | `cashier03` | `cashier123` |
+
+Sau khi import `database/seed_demo_orders.sql`, báo cáo admin có dữ liệu lịch sử 05–06/2026. Chi tiết: [`DEMO.md`](DEMO.md).
 
 ## Chức năng đã triển khai
 

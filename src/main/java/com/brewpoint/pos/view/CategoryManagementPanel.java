@@ -2,19 +2,19 @@ package com.brewpoint.pos.view;
 
 import com.brewpoint.pos.controller.CatalogController;
 import com.brewpoint.pos.model.Category;
+import com.brewpoint.pos.util.FormLayout;
+import com.brewpoint.pos.util.UIConstants;
 import com.brewpoint.pos.util.UiUtils;
 import com.brewpoint.pos.util.ValidationUtils;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,8 @@ public class CategoryManagementPanel extends JPanel {
     private int selectedId;
 
     public CategoryManagementPanel() {
-        setLayout(new BorderLayout(8, 8));
+        UiUtils.styleContentPanel(this);
+        setLayout(new BorderLayout(UIConstants.SPACING_MD, UIConstants.SPACING_MD));
         add(buildForm(), BorderLayout.NORTH);
         UiUtils.configureTable(table);
         table.getSelectionModel().addListSelectionListener(e -> selectRow());
@@ -47,22 +48,20 @@ public class CategoryManagementPanel extends JPanel {
     }
 
     private JPanel buildForm() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.add(new JLabel("Tên"));
-        panel.add(nameField);
-        panel.add(new JLabel("Thứ tự"));
-        panel.add(orderField);
-        panel.add(activeBox);
+        UiUtils.styleField(nameField);
+        UiUtils.styleField(orderField);
+        activeBox.setFont(UIConstants.font(UIConstants.FONT_LABEL));
         JButton saveButton = UiUtils.primaryButton("Lưu");
         saveButton.addActionListener(e -> save());
-        JButton deleteButton = new JButton("Ngừng dùng");
+        JButton deleteButton = UiUtils.dangerButton("Ngừng dùng");
         deleteButton.addActionListener(e -> deactivate());
-        JButton clearButton = new JButton("Làm mới");
+        JButton clearButton = UiUtils.secondaryButton("Nhập mới");
         clearButton.addActionListener(e -> clearForm());
-        panel.add(saveButton);
-        panel.add(deleteButton);
-        panel.add(clearButton);
-        return panel;
+        return new FormLayout()
+                .addRow("Tên", nameField)
+                .addRow("Thứ tự", orderField)
+                .addFullWidth(activeBox)
+                .buildCard(saveButton, deleteButton, clearButton);
     }
 
     private void loadData() {
