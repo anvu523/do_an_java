@@ -15,20 +15,68 @@ Chào mừng bạn đến với dự án "Hệ thống Quản lý Điểm Bán H
 * **Dependency Injection (DI):** Áp dụng DI qua Constructor, sử dụng `DependencyContainer` tự xây dựng làm trung tâm IoC (Inversion of Control) thay vì dùng từ khóa `new` tùy tiện.
 * **Object Pool & Proxy Pattern:** Giải quyết hoàn toàn bài toán nghẽn cổ chai mạng bằng cách tạo một Pool Connection (`SimpleConnectionPool`). Ứng dụng `Dynamic Proxy` được sử dụng để chặn các lời gọi `.close()`, tự động trả các kết nối đang mở về hàng đợi thay vì đóng chúng vĩnh viễn.
 
-## Cách cài đặt (Getting Started)
+---
 
-1. Cài đặt **Java JDK 17** và **Apache Maven**.
-2. Cài đặt **MySQL 8.0**, tạo Database và chạy script `.sql` (nếu có trong kho lưu trữ) để nạp dữ liệu mồi.
-3. Chỉnh sửa thông tin kết nối Database trong file `src/main/resources/application.properties`.
-4. Mở terminal tại thư mục gốc của project và chạy lệnh biên dịch tự động:
-   ```bash
-   mvn clean package
-   ```
-5. Chạy ứng dụng từ file `.jar` đã đóng gói nằm trong thư mục `target/`:
-   ```bash
-   java -jar target/brewpoint-pos-1.0.0-shaded.jar
-   ```
+## Cách cài đặt và Vận hành (Getting Started)
 
-## Mã nguồn mở & Unit Testing
-Dự án được bảo vệ toàn vẹn bằng bộ **32 Unit Tests** (tỷ lệ Pass Rate 100%).
-Tham khảo thư mục `academic_report/` để đọc toàn bộ báo cáo phân tích thiết kế chi tiết (ERD, Sequence Diagram, Class Diagram) được minh họa bằng PlantUML.
+### 1. Chuẩn bị cơ sở dữ liệu (MySQL qua Podman / Docker)
+
+Dự án cung cấp sẵn các script tự động để khởi tạo Database với hơn 1.600 đơn hàng demo. Khuyến nghị sử dụng **Podman** (hoặc Docker).
+
+**Trên Windows (PowerShell):**
+Bạn chỉ cần chạy script có sẵn, script này sẽ tự động dọn dẹp volume cũ, tạo MySQL container và nạp dữ liệu (seed) vào:
+```powershell
+cd C:\Users\nngocquang\Documents\pos\do_an_java
+.\scripts\reset-db-podman.ps1
+```
+
+Sau khi chạy xong, hãy kiểm tra xem dữ liệu tiếng Việt có bị lỗi font (hiển thị dấu `?`) hay không bằng script sau:
+```powershell
+.\scripts\verify-db-utf8.ps1
+```
+*Kết quả mong đợi: hiển thị đúng chữ "Trà sữa trân châu đường đen" và "UTF-8 OK".*
+
+**Thủ công (Linux / macOS):**
+```bash
+podman compose down -v
+podman compose up -d
+# Đợi vài phút để MySQL khởi động và nạp tự động file 01_drink_store.sql và 02_seed_demo_orders.sql
+```
+
+### 2. Biên dịch và Chạy ứng dụng
+
+Yêu cầu máy tính cài đặt **Java JDK 17** và **Apache Maven**.
+
+Mở terminal tại thư mục gốc của project và chạy lệnh biên dịch tự động để đóng gói thành Fat JAR (Uber-Jar):
+```bash
+mvn clean package
+```
+
+Sau khi build thành công, chạy ứng dụng từ file `.jar` đã đóng gói nằm trong thư mục `target/`:
+```bash
+java -jar target/brewpoint-pos-1.0.0.jar
+```
+
+> **Ghi chú về file JAR:** Maven Shade Plugin đã được cấu hình để tự động ghi đè tệp `brewpoint-pos-1.0.0.jar` mặc định thành Fat JAR (chứa toàn bộ thư viện). Tệp JAR không chứa thư viện (thin jar) sẽ được đổi tên thành `original-brewpoint-pos-1.0.0.jar`. Do đó, bạn chạy lệnh `java -jar target/brewpoint-pos-1.0.0.jar` là hoàn toàn chính xác!
+
+### 3. Mã nguồn mở & Kiểm thử tự động (Unit Testing)
+Dự án được bảo vệ toàn vẹn bằng bộ **32 Unit Tests** độc lập (tỷ lệ Pass Rate 100%).
+Để chạy toàn bộ bài kiểm tra nhằm xác minh độ an toàn của thuật toán tính tiền:
+```bash
+mvn test
+```
+
+---
+
+## Tài khoản Demo
+
+| Vai trò | Username | Mật khẩu | Họ tên nhân viên |
+|---|---|---|---|
+| **Quản lý (Admin)** | `admin` | `admin123` | Hệ thống quản trị |
+| **Thu ngân 1** | `cashier01` | `cashier123` | Nguyễn Thị Lan |
+| **Thu ngân 2** | `cashier02` | `cashier123` | Trần Văn Minh |
+| **Thu ngân 3** | `cashier03` | `cashier123` | Lê Hoàng An |
+
+---
+
+> 🚀 **Mọi chi tiết kỹ thuật chuyên sâu và các sơ đồ UML (ERD, Sequence Diagram, Class Diagram), vui lòng xem tại thư mục `academic_report`.**
