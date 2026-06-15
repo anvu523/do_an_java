@@ -11,11 +11,11 @@ import java.util.List;
 public class StatisticService {
     private final StatisticDAO statisticDAO = new StatisticDAO();
 
-    public StatisticSummary summary(LocalDate selectedDate) throws SQLException {
-        return statisticDAO.summary(selectedDate);
+    public StatisticSummary summary(LocalDate selectedDate, Integer employeeId) throws SQLException {
+        return statisticDAO.summary(selectedDate, employeeId);
     }
 
-    public List<ProductSalesStat> topProducts(LocalDate selectedDate) throws SQLException {
-        return statisticDAO.topProducts(selectedDate);
+    public List<ProductSalesStat> topProducts(LocalDate selectedDate, Integer employeeId) throws SQLException {
+        return statisticDAO.topProducts(selectedDate, employeeId);
     }
 }

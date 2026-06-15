@@ -11,11 +11,11 @@ import java.util.List;
 public class StatisticController {
     private final StatisticService statisticService = new StatisticService();
 
-    public StatisticSummary summary(LocalDate selectedDate) throws SQLException {
-        return statisticService.summary(selectedDate);
+    public StatisticSummary summary(LocalDate selectedDate, Integer employeeId) throws SQLException {
+        return statisticService.summary(selectedDate, employeeId);
     }
 
-    public List<ProductSalesStat> topProducts(LocalDate selectedDate) throws SQLException {
-        return statisticService.topProducts(selectedDate);
+    public List<ProductSalesStat> topProducts(LocalDate selectedDate, Integer employeeId) throws SQLException {
+        return statisticService.topProducts(selectedDate, employeeId);
     }
 }

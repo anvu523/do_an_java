@@ -557,27 +557,39 @@ public class PosPanel extends JPanel {
 
     private void loadProducts() {
 
+        loadProducts(true);
+
+    }
+
+
+
+    private void loadProducts(boolean showLoading) {
+
         Category selected = (Category) categoryCombo.getSelectedItem();
 
         Integer categoryId = selected == null || selected.getCategoryId() == 0 ? null : Integer.valueOf(selected.getCategoryId());
 
         String keyword = UiUtils.readFieldText(searchField);
 
-        productCards.clear();
+        if (showLoading) {
 
-        productGrid.removeAll();
+            productCards.clear();
 
-        productCountLabel.setText("Đang tải...");
+            productGrid.removeAll();
 
-        JLabel loadingLabel = new JLabel("Đang tải sản phẩm...");
+            productCountLabel.setText("Đang tải...");
 
-        loadingLabel.setFont(UIConstants.font(UIConstants.FONT_LABEL));
+            JLabel loadingLabel = new JLabel("Đang tải sản phẩm...");
 
-        productGrid.add(loadingLabel);
+            loadingLabel.setFont(UIConstants.font(UIConstants.FONT_LABEL));
 
-        productGrid.revalidate();
+            productGrid.add(loadingLabel);
 
-        productGrid.repaint();
+            productGrid.revalidate();
+
+            productGrid.repaint();
+
+        }
 
         SwingWorker<List<Product>, Void> worker = new SwingWorker<List<Product>, Void>() {
 
@@ -1127,7 +1139,7 @@ public class PosPanel extends JPanel {
 
         fillCart();
 
-        loadProducts();
+        loadProducts(false);
 
         searchField.requestFocusInWindow();
 

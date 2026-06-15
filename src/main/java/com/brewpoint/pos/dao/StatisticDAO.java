@@ -15,25 +15,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StatisticDAO {
-    public StatisticSummary summary(LocalDate selectedDate) throws SQLException {
+    public StatisticSummary summary(LocalDate selectedDate, Integer employeeId) throws SQLException {
         LocalDate safeDate = selectedDate == null ? LocalDate.now() : selectedDate;
         try (Connection connection = DatabaseManager.getInstance().getConnection()) {
-            BigDecimal todayRevenue = revenueForDate(connection, LocalDate.now());
-            BigDecimal selectedRevenue = revenueForDate(connection, safeDate);
-            int orderCount = orderCountForDate(connection, safeDate);
+            BigDecimal todayRevenue = revenueForDate(connection, LocalDate.now(), employeeId);
+            BigDecimal selectedRevenue = revenueForDate(connection, safeDate, employeeId);
+            int orderCount = orderCountForDate(connection, safeDate, employeeId);
             return new StatisticSummary(todayRevenue, selectedRevenue, orderCount);
         }
     }
 
-    public List<ProductSalesStat> topProducts(LocalDate selectedDate) throws SQLException {
+    public List<ProductSalesStat> topProducts(LocalDate selectedDate, Integer employeeId) throws SQLException {
         LocalDate safeDate = selectedDate == null ? LocalDate.now() : selectedDate;
         String sql = "SELECT oi.product_name_snapshot, SUM(oi.quantity) AS qty, SUM(oi.line_total) AS revenue "
                 + "FROM order_items oi JOIN orders o ON o.order_id = oi.order_id "
                 + "WHERE o.status = 'COMPLETED' AND DATE(o.order_time) = ? "
+                + "AND (? IS NULL OR o.employee_id = ?) "
                 + "GROUP BY oi.product_name_snapshot ORDER BY qty DESC, revenue DESC LIMIT 10";
         try (Connection connection = DatabaseManager.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setDate(1, Date.valueOf(safeDate));
+            if (employeeId == null) {
+                statement.setNull(2, java.sql.Types.INTEGER);
+                statement.setNull(3, java.sql.Types.INTEGER);
+            } else {
+                statement.setInt(2, employeeId);
+                statement.setInt(3, employeeId);
+            }
             try (ResultSet resultSet = statement.executeQuery()) {
                 List<ProductSalesStat> stats = new ArrayList<ProductSalesStat>();
                 while (resultSet.next()) {
@@ -48,10 +56,18 @@ public class StatisticDAO {
         }
     }
 
-    private BigDecimal revenueForDate(Connection connection, LocalDate date) throws SQLException {
-        String sql = "SELECT COALESCE(SUM(total_amount), 0) AS revenue FROM orders WHERE status = 'COMPLETED' AND DATE(order_time) = ?";
+    private BigDecimal revenueForDate(Connection connection, LocalDate date, Integer employeeId) throws SQLException {
+        String sql = "SELECT COALESCE(SUM(total_amount), 0) AS revenue FROM orders WHERE status = 'COMPLETED' AND DATE(order_time) = ? "
+                + "AND (? IS NULL OR employee_id = ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setDate(1, Date.valueOf(date));
+            if (employeeId == null) {
+                statement.setNull(2, java.sql.Types.INTEGER);
+                statement.setNull(3, java.sql.Types.INTEGER);
+            } else {
+                statement.setInt(2, employeeId);
+                statement.setInt(3, employeeId);
+            }
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return resultSet.getBigDecimal("revenue");
@@ -61,10 +77,18 @@ public class StatisticDAO {
         return BigDecimal.ZERO;
     }
 
-    private int orderCountForDate(Connection connection, LocalDate date) throws SQLException {
-        String sql = "SELECT COUNT(*) AS total FROM orders WHERE status = 'COMPLETED' AND DATE(order_time) = ?";
+    private int orderCountForDate(Connection connection, LocalDate date, Integer employeeId) throws SQLException {
+        String sql = "SELECT COUNT(*) AS total FROM orders WHERE status = 'COMPLETED' AND DATE(order_time) = ? "
+                + "AND (? IS NULL OR employee_id = ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setDate(1, Date.valueOf(date));
+            if (employeeId == null) {
+                statement.setNull(2, java.sql.Types.INTEGER);
+                statement.setNull(3, java.sql.Types.INTEGER);
+            } else {
+                statement.setInt(2, employeeId);
+                statement.setInt(3, employeeId);
+            }
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return resultSet.getInt("total");

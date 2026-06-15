@@ -89,7 +89,7 @@ public class MainFrame extends JFrame {
         addMenuButton(menu, "Topping bổ sung", "toppings", isAdmin());
         addMenuButton(menu, "Nhân viên", "employees", isAdmin());
         addMenuButton(menu, "Báo cáo", "reports", isAdmin());
-        addMenuButton(menu, "Tổng quan ngày", "statistics", isAdmin());
+        addMenuButton(menu, "Tổng quan ngày", "statistics", true);
         JButton logoutButton = UiUtils.dangerButton("Đăng xuất");
         logoutButton.addActionListener(e -> {
             dispose();
@@ -127,7 +127,7 @@ public class MainFrame extends JFrame {
         contentPanel.add(new ToppingManagementPanel(), "toppings");
         contentPanel.add(new EmployeeManagementPanel(currentUser.getUserId()), "employees");
         contentPanel.add(new ReportsPanel(), "reports");
-        contentPanel.add(new StatisticsPanel(), "statistics");
+        contentPanel.add(new StatisticsPanel(isAdmin(), employeeId), "statistics");
     }
 
     private boolean isAdmin() {

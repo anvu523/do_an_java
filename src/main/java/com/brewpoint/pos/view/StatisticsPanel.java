@@ -27,6 +27,8 @@ public class StatisticsPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private final transient StatisticController controller = new StatisticController();
+    private final boolean admin;
+    private final Integer employeeId;
     private final JTextField dateField = new JTextField(DateUtils.format(LocalDate.now()), 12);
     private final JLabel todayRevenueLabel = new JLabel("0 ₫");
     private final JLabel selectedRevenueLabel = new JLabel("0 ₫");
@@ -40,7 +42,9 @@ public class StatisticsPanel extends JPanel {
     };
     private final JTable table = new JTable(model);
 
-    public StatisticsPanel() {
+    public StatisticsPanel(boolean admin, Integer employeeId) {
+        this.admin = admin;
+        this.employeeId = employeeId;
         UiUtils.styleContentPanel(this);
         setLayout(new BorderLayout(UIConstants.SPACING_MD, UIConstants.SPACING_MD));
         add(buildTop(), BorderLayout.NORTH);
@@ -49,20 +53,36 @@ public class StatisticsPanel extends JPanel {
         loadData();
     }
 
+    public StatisticsPanel() {
+        this(true, null);
+    }
+
     private JPanel buildTop() {
         JPanel top = new JPanel(new BorderLayout(UIConstants.SPACING_MD, UIConstants.SPACING_MD));
         top.setOpaque(false);
+
+        JLabel titleLabel = new JLabel(admin ? "THỐNG KÊ DOANH SỐ CỬA HÀNG" : "THỐNG KÊ DOANH SỐ CÁ NHÂN");
+        titleLabel.setFont(UIConstants.fontBold(UIConstants.FONT_SECTION_TITLE));
+        titleLabel.setForeground(UIConstants.PRIMARY);
+        top.add(titleLabel, BorderLayout.NORTH);
+
+        JPanel content = new JPanel(new BorderLayout(UIConstants.SPACING_MD, UIConstants.SPACING_MD));
+        content.setOpaque(false);
+
         UiUtils.styleField(dateField);
         JButton loadButton = UiUtils.primaryButton("Xem");
         loadButton.addActionListener(e -> loadData());
-        top.add(new FormLayout()
+        content.add(new FormLayout()
                 .addRow("Ngày xem (dd/MM/yyyy)", dateField)
                 .buildCard(loadButton), BorderLayout.NORTH);
+
         JPanel cards = new JPanel(new GridLayout(1, 3, UIConstants.SPACING_MD, 0));
         cards.add(metric("Doanh thu hôm nay", todayRevenueLabel));
         cards.add(metric("Doanh thu ngày đã chọn", selectedRevenueLabel));
-        cards.add(metric("Số hóa đơn", orderCountLabel));
-        top.add(cards, BorderLayout.CENTER);
+        cards.add(metric("Số lượng hóa đơn", orderCountLabel));
+        content.add(cards, BorderLayout.CENTER);
+
+        top.add(content, BorderLayout.CENTER);
         return top;
     }
 
@@ -85,8 +105,8 @@ public class StatisticsPanel extends JPanel {
         }
         SwingWorker<Object[], Void> worker = new SwingWorker<Object[], Void>() {
             protected Object[] doInBackground() throws Exception {
-                StatisticSummary summary = controller.summary(selectedDate);
-                List<ProductSalesStat> topProducts = controller.topProducts(selectedDate);
+                StatisticSummary summary = controller.summary(selectedDate, admin ? null : employeeId);
+                List<ProductSalesStat> topProducts = controller.topProducts(selectedDate, admin ? null : employeeId);
                 return new Object[]{summary, topProducts};
             }
 

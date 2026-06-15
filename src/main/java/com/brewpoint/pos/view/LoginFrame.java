@@ -24,7 +24,7 @@ public class LoginFrame extends JFrame {
 
     private final transient AuthController authController = new AuthController();
     private final JTextField usernameField = new JTextField("admin", 18);
-    private final JPasswordField passwordField = new JPasswordField("admin123", 18);
+    private final JPasswordField passwordField = new JPasswordField(18);
 
     public LoginFrame() {
         setTitle("BrewPoint POS - Đăng nhập");
