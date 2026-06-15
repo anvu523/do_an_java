@@ -1,0 +1,44 @@
+classDiagram
+    class DatabaseManager {
+        <<Singleton>>
+        -static DatabaseManager instance
+        -DatabaseManager()
+        +static getInstance() DatabaseManager
+    }
+
+    class DependencyContainer {
+        <<Singleton>>
+        -static DependencyContainer instance
+        -DependencyContainer()
+        +static getInstance() DependencyContainer
+    }
+
+    class ReportExportStrategy {
+        <<interface, Strategy>>
+        +export(jasperPrint, filePath)
+    }
+
+    class PdfReportExportStrategy {
+        +export(jasperPrint, filePath)
+    }
+
+    class XlsxReportExportStrategy {
+        +export(jasperPrint, filePath)
+    }
+
+    class DocxReportExportStrategy {
+        +export(jasperPrint, filePath)
+    }
+
+    class ReportController {
+        -ReportExportStrategy pdfStrategy
+        -ReportExportStrategy xlsxStrategy
+        -ReportExportStrategy docxStrategy
+        +exportReport()
+    }
+
+    ReportExportStrategy <|.. PdfReportExportStrategy
+    ReportExportStrategy <|.. XlsxReportExportStrategy
+    ReportExportStrategy <|.. DocxReportExportStrategy
+
+    ReportController o-- ReportExportStrategy : uses

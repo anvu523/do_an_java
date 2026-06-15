@@ -1,0 +1,49 @@
+classDiagram
+    namespace View_Layer {
+        class PosPanel
+        class CategoryManagementPanel
+    }
+
+    namespace Controller_Layer {
+        class CheckoutController {
+            +processCheckout(orderId, receivedAmount)
+        }
+        class CatalogController {
+            +findCategories()
+        }
+    }
+
+    namespace Service_Layer {
+        class CheckoutService {
+            +processCheckout()
+        }
+        class CategoryService {
+            +findAll()
+        }
+    }
+
+    namespace DAO_Layer {
+        class OrderDAO {
+            +updateOrder()
+        }
+        class CategoryDAO {
+            +findAll()
+        }
+    }
+
+    namespace Model_Layer {
+        class Order
+        class Category
+    }
+
+    PosPanel --> CheckoutController
+    CategoryManagementPanel --> CatalogController
+
+    CheckoutController --> CheckoutService
+    CatalogController --> CategoryService
+
+    CheckoutService --> OrderDAO
+    CategoryService --> CategoryDAO
+
+    OrderDAO ..> Order : Creates/Updates
+    CategoryDAO ..> Category : Creates/Updates

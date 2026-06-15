@@ -1,0 +1,24 @@
+classDiagram
+    class Connection {
+        <<interface>>
+        +close()
+        +createStatement()
+    }
+
+    class SimpleConnectionPool {
+        -BlockingQueue~Connection~ pool
+        +getConnection() Connection
+        +shutdown()
+    }
+
+    class ConnectionProxyHandler {
+        <<InvocationHandler>>
+        -Connection rawConnection
+        +invoke(proxy, method, args) Object
+    }
+
+    SimpleConnectionPool "1" *-- "0..n" Connection : manages
+    SimpleConnectionPool ..> ConnectionProxyHandler : creates
+    ConnectionProxyHandler --> Connection : wraps
+
+    note for ConnectionProxyHandler "intercepts close() method\nand returns connection to pool"

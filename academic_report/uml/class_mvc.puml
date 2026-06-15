@@ -1,0 +1,50 @@
+@startuml
+package "View (UI Layer)" {
+  class PosPanel
+  class CategoryManagementPanel
+}
+
+package "Controller Layer" {
+  class CheckoutController {
+    + processCheckout(orderId, receivedAmount)
+  }
+  class CatalogController {
+    + findCategories()
+  }
+}
+
+package "Service Layer (Business Logic)" {
+  class CheckoutService {
+    + processCheckout()
+  }
+  class CategoryService {
+    + findAll()
+  }
+}
+
+package "DAO Layer (Data Access)" {
+  class OrderDAO {
+    + updateOrder()
+  }
+  class CategoryDAO {
+    + findAll()
+  }
+}
+
+package "Model Layer" {
+  class Order
+  class Category
+}
+
+PosPanel --> CheckoutController
+CategoryManagementPanel --> CatalogController
+
+CheckoutController --> CheckoutService
+CatalogController --> CategoryService
+
+CheckoutService --> OrderDAO
+CategoryService --> CategoryDAO
+
+OrderDAO ..> Order : Creates/Updates
+CategoryDAO ..> Category : Creates/Updates
+@enduml

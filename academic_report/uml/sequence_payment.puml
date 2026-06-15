@@ -1,0 +1,42 @@
+@startuml
+actor Cashier as User
+boundary "PosPanel\n(View)" as View
+control "CheckoutController" as Ctrl
+entity "CheckoutService" as Svc
+database "OrderDAO" as DAO
+database "DatabaseManager\n(DB Pool)" as DB
+
+User -> View : Bấm nút "Thanh toán"
+activate View
+View -> Ctrl : processCheckout(orderId, receivedAmount)
+activate Ctrl
+Ctrl -> Svc : processCheckout(orderId, receivedAmount)
+activate Svc
+
+Svc -> Svc : Lấy thông tin đơn hàng\n& Kiểm tra số tiền
+Svc -> Svc : status = COMPLETED\nchangeAmount = ...
+
+Svc -> DAO : updateOrder(orderId, status, received, change)
+activate DAO
+DAO -> DB : getConnection()
+activate DB
+DB --> DAO : Connection (Proxy)
+deactivate DB
+
+DAO -> DAO : executeUpdate()
+DAO -> DB : conn.close() (Proxy trả về Pool)
+activate DB
+DB --> DAO : OK
+deactivate DB
+DAO --> Svc : Success
+deactivate DAO
+
+Svc --> Ctrl : CheckoutResult (orderId, total, change)
+deactivate Svc
+
+Ctrl --> View : Trả về kết quả (Tiền thừa, In hóa đơn)
+deactivate Ctrl
+
+View -> User : Hiển thị thông báo & In hóa đơn
+deactivate View
+@enduml

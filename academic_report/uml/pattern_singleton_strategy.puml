@@ -1,0 +1,42 @@
+@startuml
+class DatabaseManager <<Singleton>> {
+  - static instance : DatabaseManager
+  - DatabaseManager()
+  + static getInstance() : DatabaseManager
+}
+
+class DependencyContainer <<Singleton>> {
+  - static instance : DependencyContainer
+  - DependencyContainer()
+  + static getInstance() : DependencyContainer
+}
+
+interface ReportExportStrategy <<Strategy>> {
+  + export(jasperPrint, filePath)
+}
+
+class PdfReportExportStrategy {
+  + export(jasperPrint, filePath)
+}
+
+class XlsxReportExportStrategy {
+  + export(jasperPrint, filePath)
+}
+
+class DocxReportExportStrategy {
+  + export(jasperPrint, filePath)
+}
+
+class ReportController {
+  - pdfStrategy : ReportExportStrategy
+  - xlsxStrategy : ReportExportStrategy
+  - docxStrategy : ReportExportStrategy
+  + exportReport()
+}
+
+ReportExportStrategy <|.. PdfReportExportStrategy
+ReportExportStrategy <|.. XlsxReportExportStrategy
+ReportExportStrategy <|.. DocxReportExportStrategy
+
+ReportController o-- ReportExportStrategy : uses
+@enduml

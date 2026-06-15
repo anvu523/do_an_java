@@ -1,0 +1,76 @@
+erDiagram
+    categories ||--o{ products : "contains"
+    products ||--o{ product_sizes : "has"
+    products ||--o{ order_items : "purchased_in"
+    users ||--o| employees : "is"
+    employees ||--o{ orders : "creates"
+    orders ||--o{ order_items : "contains"
+    order_items ||--o{ order_item_toppings : "has_extra"
+    toppings ||--o{ order_item_toppings : "added_as"
+
+    categories {
+        INT category_id PK
+        VARCHAR name
+        INT display_order
+        TINYINT active
+    }
+    products {
+        INT product_id PK
+        INT category_id FK
+        VARCHAR product_code
+        VARCHAR name
+        VARCHAR image_path
+        INT stock_quantity
+        TINYINT active
+    }
+    product_sizes {
+        INT product_size_id PK
+        INT product_id FK
+        VARCHAR size_name
+        DECIMAL sale_price
+        TINYINT active
+    }
+    toppings {
+        INT topping_id PK
+        VARCHAR name
+        DECIMAL extra_price
+        TINYINT active
+    }
+    users {
+        INT user_id PK
+        VARCHAR username
+        VARCHAR password_hash
+        TINYINT active
+    }
+    employees {
+        INT employee_id PK
+        INT user_id FK
+        VARCHAR full_name
+        VARCHAR phone
+        VARCHAR address
+    }
+    orders {
+        BIGINT order_id PK
+        INT employee_id FK
+        VARCHAR order_code
+        DECIMAL total_amount
+        DECIMAL received_amount
+        DECIMAL change_amount
+        DATETIME order_time
+        VARCHAR status
+    }
+    order_items {
+        BIGINT order_item_id PK
+        BIGINT order_id FK
+        INT product_id FK
+        INT product_size_id FK
+        INT quantity
+        DECIMAL unit_price
+        DECIMAL line_total
+    }
+    order_item_toppings {
+        BIGINT item_topping_id PK
+        BIGINT order_item_id FK
+        INT topping_id FK
+        DECIMAL unit_price
+    }
