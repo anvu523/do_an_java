@@ -32,11 +32,18 @@ public final class DatabaseManager {
         } catch (ClassNotFoundException ex) {
             throw new SQLException("Không tìm thấy MySQL JDBC Driver.", ex);
         }
-        return DriverManager.getConnection(
+        Connection connection = DriverManager.getConnection(
                 properties.getProperty("db.url"),
                 properties.getProperty("db.username"),
                 properties.getProperty("db.password")
         );
+        try {
+            connection.createStatement().execute("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
+        } catch (SQLException ex) {
+            connection.close();
+            throw ex;
+        }
+        return connection;
     }
 
     public String getUrl() {
@@ -67,7 +74,10 @@ public final class DatabaseManager {
             }
         }
         properties.putIfAbsent("db.driver", "com.mysql.cj.jdbc.Driver");
-        properties.putIfAbsent("db.url", "jdbc:mysql://localhost:3306/brewpoint_pos?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&useUnicode=true&characterEncoding=UTF-8");
+        properties.putIfAbsent("db.url",
+                "jdbc:mysql://localhost:3306/brewpoint_pos?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh"
+                        + "&useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_unicode_ci"
+                        + "&characterSetResults=utf8mb4");
         properties.putIfAbsent("db.username", "root");
         properties.putIfAbsent("db.password", "");
     }

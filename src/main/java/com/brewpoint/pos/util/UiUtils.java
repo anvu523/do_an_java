@@ -24,6 +24,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public final class UiUtils {
     public static final Color BACKGROUND = UIConstants.BG_APP;
@@ -90,11 +92,53 @@ public final class UiUtils {
         field.setPreferredSize(new Dimension(width, UIConstants.FORM_FIELD_HEIGHT));
     }
 
+    public static void styleCompactField(JTextField field) {
+        field.setFont(UIConstants.font(UIConstants.FONT_INPUT));
+        int cols = field.getColumns();
+        int width = cols > 0 ? cols * 9 + 24 : 100;
+        Dimension size = new Dimension(width, UIConstants.FORM_FIELD_HEIGHT);
+        field.setPreferredSize(size);
+        field.setMinimumSize(size);
+        field.setMaximumSize(size);
+    }
+
+    public static void installPlaceholder(JTextField field, final String placeholder) {
+        field.putClientProperty("brewpoint.placeholder", placeholder);
+        field.setForeground(UIConstants.TEXT_MUTED);
+        field.setText(placeholder);
+        field.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                if (placeholder.equals(field.getText())) {
+                    field.setText("");
+                    field.setForeground(UIConstants.TEXT_PRIMARY);
+                }
+            }
+
+            public void focusLost(FocusEvent e) {
+                if (field.getText() == null || field.getText().trim().isEmpty()) {
+                    field.setForeground(UIConstants.TEXT_MUTED);
+                    field.setText(placeholder);
+                }
+            }
+        });
+    }
+
+    public static String readFieldText(JTextField field) {
+        Object placeholder = field.getClientProperty("brewpoint.placeholder");
+        String text = field.getText();
+        if (text == null) {
+            return "";
+        }
+        if (placeholder != null && placeholder.equals(text)) {
+            return "";
+        }
+        return text;
+    }
+
     public static JLabel formLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(UIConstants.font(UIConstants.FONT_LABEL));
         label.setForeground(UIConstants.TEXT_PRIMARY);
-        label.setPreferredSize(new Dimension(120, UIConstants.FORM_FIELD_HEIGHT));
         return label;
     }
 

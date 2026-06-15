@@ -3,7 +3,6 @@ package com.brewpoint.pos.view;
 import com.brewpoint.pos.controller.OrderController;
 import com.brewpoint.pos.model.OrderSummary;
 import com.brewpoint.pos.util.DateUtils;
-import com.brewpoint.pos.util.FormLayout;
 import com.brewpoint.pos.util.MoneyUtils;
 import com.brewpoint.pos.util.UIConstants;
 import com.brewpoint.pos.util.UiUtils;
@@ -28,7 +27,7 @@ public class OrderHistoryPanel extends JPanel {
     private final transient OrderController controller = new OrderController();
     private final boolean admin;
     private final Integer employeeId;
-    private final JTextField codeField = new JTextField(12);
+    private final JTextField codeField = new JTextField(14);
     private final JTextField dateField = new JTextField(10);
     private final DefaultTableModel model = new DefaultTableModel(
             new Object[]{"Mã hóa đơn", "Thu ngân", "Thời gian", "Thanh toán", "Tổng", "Trạng thái"}, 0) {
@@ -54,14 +53,23 @@ public class OrderHistoryPanel extends JPanel {
     }
 
     private JPanel buildSearch() {
-        UiUtils.styleField(codeField);
-        UiUtils.styleField(dateField);
-        JButton searchButton = UiUtils.primaryButton("Tìm");
+        JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, UIConstants.SPACING_MD, UIConstants.SPACING_SM));
+        row.setOpaque(false);
+
+        row.add(UiUtils.formLabel("Mã hóa đơn"));
+        UiUtils.styleCompactField(codeField);
+        row.add(codeField);
+
+        row.add(UiUtils.formLabel("Ngày lập hóa đơn (dd/MM/yyyy)"));
+        dateField.setToolTipText("Để trống nếu không lọc theo ngày");
+        UiUtils.styleCompactField(dateField);
+        row.add(dateField);
+
+        JButton searchButton = UiUtils.primaryButton("Tìm kiếm");
         searchButton.addActionListener(e -> loadData());
-        return new FormLayout()
-                .addRow("Mã hóa đơn", codeField)
-                .addRow("Ngày (dd/MM/yyyy)", dateField)
-                .buildCard(searchButton);
+        row.add(searchButton);
+
+        return UiUtils.wrapFormCard(row);
     }
 
     private JPanel buildBottom() {

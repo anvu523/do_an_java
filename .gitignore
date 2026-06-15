@@ -6,9 +6,17 @@ lib/
 .idea/
 *.iml
 
-# Markdown docs/notes generated while working
-*.md
-!README.md
-
-# Cursor/agent/prompt working notes
+# Cursor / IDE agent workspace
 .cursor/
+
+# Tài liệu phụ (audit, prompt, kế hoạch AI) — không đưa vào repo chính
+docs/
+
+# File hướng dẫn / ghi chú dành cho AI & agent
+README-AGENT.md
+README-agent.md
+AGENTS.md
+AUDIT.md
+REVIEW_NOTES.md
+TASKS.md
+SPEC.md

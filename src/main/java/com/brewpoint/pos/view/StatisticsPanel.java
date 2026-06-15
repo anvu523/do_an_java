@@ -53,14 +53,14 @@ public class StatisticsPanel extends JPanel {
         JPanel top = new JPanel(new BorderLayout(UIConstants.SPACING_MD, UIConstants.SPACING_MD));
         top.setOpaque(false);
         UiUtils.styleField(dateField);
-        JButton loadButton = UiUtils.primaryButton("Tải thống kê");
+        JButton loadButton = UiUtils.primaryButton("Xem");
         loadButton.addActionListener(e -> loadData());
         top.add(new FormLayout()
-                .addRow("Ngày (dd/MM/yyyy)", dateField)
+                .addRow("Ngày xem (dd/MM/yyyy)", dateField)
                 .buildCard(loadButton), BorderLayout.NORTH);
         JPanel cards = new JPanel(new GridLayout(1, 3, UIConstants.SPACING_MD, 0));
         cards.add(metric("Doanh thu hôm nay", todayRevenueLabel));
-        cards.add(metric("Doanh thu ngày chọn", selectedRevenueLabel));
+        cards.add(metric("Doanh thu ngày đã chọn", selectedRevenueLabel));
         cards.add(metric("Số hóa đơn", orderCountLabel));
         top.add(cards, BorderLayout.CENTER);
         return top;
@@ -96,7 +96,7 @@ public class StatisticsPanel extends JPanel {
                     Object[] result = get();
                     fill((StatisticSummary) result[0], (List<ProductSalesStat>) result[1]);
                 } catch (Exception ex) {
-                    UiUtils.showError(StatisticsPanel.this, new RuntimeException("Không tải được thống kê."));
+                    UiUtils.showError(StatisticsPanel.this, new RuntimeException("Không tải được tổng quan ngày."));
                 }
             }
         };

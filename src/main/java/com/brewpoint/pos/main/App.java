@@ -1,6 +1,7 @@
 package com.brewpoint.pos.main;
 
 import com.brewpoint.pos.view.LoginFrame;
+import com.brewpoint.pos.report.util.JasperFontBootstrap;
 import com.brewpoint.pos.util.UIConstants;
 
 import javax.swing.SwingUtilities;
@@ -19,6 +20,7 @@ public final class App {
                 } catch (Exception ignored) {
                     // Dùng look and feel mặc định nếu hệ điều hành không hỗ trợ.
                 }
+                JasperFontBootstrap.ensureInitialized();
                 new LoginFrame().setVisible(true);
             }
         });

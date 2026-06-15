@@ -1,7 +1,6 @@
 package com.brewpoint.pos.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class CartLineRequest {
@@ -49,12 +48,5 @@ public class CartLineRequest {
 
     public void setNote(String note) {
         this.note = note;
-    }
-
-    public String cartKey() {
-        List<Integer> sorted = new ArrayList<Integer>(toppingIds);
-        Collections.sort(sorted);
-        String cleanNote = note == null ? "" : note.trim().replaceAll("\\s+", " ");
-        return productId + "|" + productSizeId + "|" + sorted.toString() + "|" + cleanNote;
     }
 }

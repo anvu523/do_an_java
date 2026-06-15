@@ -162,11 +162,15 @@ CREATE TABLE order_item_toppings (
 
 INSERT INTO users (username, password_hash, role, active) VALUES
 ('admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMIN', 1),
-('cashier', 'b4c94003c562bb0d89535eca77f07284fe560fd48a7cc1ed99f0a56263d616ba', 'CASHIER', 1);
+('cashier01', 'b4c94003c562bb0d89535eca77f07284fe560fd48a7cc1ed99f0a56263d616ba', 'CASHIER', 1),
+('cashier02', 'b4c94003c562bb0d89535eca77f07284fe560fd48a7cc1ed99f0a56263d616ba', 'CASHIER', 1),
+('cashier03', 'b4c94003c562bb0d89535eca77f07284fe560fd48a7cc1ed99f0a56263d616ba', 'CASHIER', 1);
 
 INSERT INTO employees (user_id, full_name, phone, email, active) VALUES
 (1, 'Quản trị viên BrewPoint', '0900000001', 'admin@brewpoint.local', 1),
-(2, 'Thu ngân demo', '0900000002', 'cashier@brewpoint.local', 1);
+(2, 'Nguyễn Thị Lan', '0900000002', 'cashier01@brewpoint.local', 1),
+(3, 'Trần Văn Minh', '0900000003', 'cashier02@brewpoint.local', 1),
+(4, 'Lê Hoàng An', '0900000004', 'cashier03@brewpoint.local', 1);
 
 INSERT INTO categories (name, display_order, active) VALUES
 ('Cà phê Việt', 1, 1),
@@ -220,3 +224,5 @@ INSERT INTO toppings (topping_code, name, extra_price, active) VALUES
 ('PUDDING-TRUNG', 'Pudding trứng', 8000, 1),
 ('KEM-CHEESE', 'Kem cheese', 12000, 1),
 ('HAT-SEN', 'Hạt sen', 10000, 1);
+
+-- Demo order history: run database/seed_demo_orders.sql after this script.

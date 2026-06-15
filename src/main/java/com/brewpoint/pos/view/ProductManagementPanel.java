@@ -91,7 +91,7 @@ public class ProductManagementPanel extends JPanel {
         deactivateButton.addActionListener(e -> deactivate());
         JButton sizeButton = UiUtils.secondaryButton("Quản lý cỡ & giá");
         sizeButton.addActionListener(e -> openSizeDialog());
-        JButton clearButton = UiUtils.secondaryButton("Làm mới");
+        JButton clearButton = UiUtils.secondaryButton("Nhập mới");
         clearButton.addActionListener(e -> clearForm());
 
         JPanel fields = new FormLayout()

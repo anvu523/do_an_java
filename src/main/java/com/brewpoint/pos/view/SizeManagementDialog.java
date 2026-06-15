@@ -72,7 +72,7 @@ public class SizeManagementDialog extends JDialog {
         saveButton.addActionListener(e -> save());
         JButton deactivateButton = UiUtils.dangerButton("Ngừng bán");
         deactivateButton.addActionListener(e -> deactivate());
-        JButton clearButton = UiUtils.secondaryButton("Làm mới");
+        JButton clearButton = UiUtils.secondaryButton("Nhập mới");
         clearButton.addActionListener(e -> clearForm());
         return new FormLayout()
                 .addRow("Mã cỡ", codeField)

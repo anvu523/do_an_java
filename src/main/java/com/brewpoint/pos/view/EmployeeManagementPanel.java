@@ -70,7 +70,7 @@ public class EmployeeManagementPanel extends JPanel {
         saveButton.addActionListener(e -> save());
         JButton resetButton = UiUtils.secondaryButton("Đặt lại mật khẩu");
         resetButton.addActionListener(e -> resetPassword());
-        JButton clearButton = UiUtils.secondaryButton("Làm mới");
+        JButton clearButton = UiUtils.secondaryButton("Nhập mới");
         clearButton.addActionListener(e -> clearForm());
         return new FormLayout()
                 .addRow("Tên đăng nhập", usernameField)

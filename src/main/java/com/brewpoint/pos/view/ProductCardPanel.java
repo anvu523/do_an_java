@@ -9,8 +9,11 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -19,6 +22,7 @@ import java.awt.event.MouseEvent;
 
 public class ProductCardPanel extends JPanel {
     private static final long serialVersionUID = 1L;
+    private static final int LOW_STOCK_THRESHOLD = 10;
 
     private final Product product;
     private final ImageService imageService;
@@ -43,61 +47,77 @@ public class ProductCardPanel extends JPanel {
         imageLabel = new JLabel(loadImageIcon(), SwingConstants.CENTER);
         imageLabel.setPreferredSize(new Dimension(imageWidth, imageHeight));
         add(imageLabel, BorderLayout.NORTH);
+        add(buildInfoPanel(), BorderLayout.SOUTH);
 
-        JPanel info = new JPanel(new GridLayout(4, 1, 0, 4));
+        if (selectable && onSelect != null) {
+            wireSelectionHandlers();
+        }
+    }
+
+    private JPanel buildInfoPanel() {
+        int stock = product.getStockQuantity();
+        boolean showStock = stock <= 0 || stock < LOW_STOCK_THRESHOLD;
+        int rows = showStock ? 3 : 2;
+        JPanel info = new JPanel(new GridLayout(rows, 1, 0, 4));
         info.setOpaque(false);
 
         JLabel nameLabel = new JLabel("<html><div style='text-align:center'>"
                 + escapeHtml(product.getName()) + "</div></html>", SwingConstants.CENTER);
         nameLabel.setFont(UIConstants.fontBold(UIConstants.FONT_CARD_NAME));
         nameLabel.setForeground(UIConstants.TEXT_PRIMARY);
-
-        String categoryName = product.getCategoryName() == null ? "" : product.getCategoryName();
-        JLabel categoryLabel = new JLabel(categoryName, SwingConstants.CENTER);
-        categoryLabel.setFont(UIConstants.font(UIConstants.FONT_CARD_META));
-        categoryLabel.setForeground(UIConstants.TEXT_MUTED);
+        info.add(nameLabel);
 
         String priceText = product.getFromPrice() == null ? "Chưa có giá" : MoneyUtils.formatVnd(product.getFromPrice());
         JLabel priceLabel = new JLabel(priceText, SwingConstants.CENTER);
         priceLabel.setFont(UIConstants.fontBold(UIConstants.FONT_CARD_META));
         priceLabel.setForeground(UIConstants.PRIMARY);
-
-        String stockText = product.getStockQuantity() > 0 ? "Còn " + product.getStockQuantity() : "Hết hàng";
-        JLabel stockLabel = new JLabel(stockText, SwingConstants.CENTER);
-        stockLabel.setFont(UIConstants.font(UIConstants.FONT_CARD_META));
-        stockLabel.setForeground(product.getStockQuantity() > 0 ? UIConstants.STOCK_OK : UIConstants.STOCK_OUT);
-
-        info.add(nameLabel);
-        info.add(categoryLabel);
         info.add(priceLabel);
-        info.add(stockLabel);
-        add(info, BorderLayout.SOUTH);
 
-        if (selectable && onSelect != null) {
-            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            MouseAdapter adapter = new MouseAdapter() {
-                public void mouseClicked(MouseEvent e) {
-                    setSelected(true);
-                    onSelect.run();
-                }
+        if (showStock) {
+            String stockText = stock > 0 ? "Còn " + stock : "Tạm hết";
+            JLabel stockLabel = new JLabel(stockText, SwingConstants.CENTER);
+            stockLabel.setFont(UIConstants.font(UIConstants.FONT_CARD_META));
+            stockLabel.setForeground(stock > 0 ? UIConstants.STOCK_OK : UIConstants.STOCK_OUT);
+            info.add(stockLabel);
+        }
 
-                public void mouseEntered(MouseEvent e) {
-                    hovered = true;
-                    applyVisualState();
-                }
+        return info;
+    }
 
-                public void mouseExited(MouseEvent e) {
-                    hovered = false;
-                    applyVisualState();
+    private void wireSelectionHandlers() {
+        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        MouseAdapter adapter = new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (!SwingUtilities.isLeftMouseButton(e)) {
+                    return;
                 }
-            };
-            addMouseListener(adapter);
-            imageLabel.addMouseListener(adapter);
-            info.addMouseListener(adapter);
-            nameLabel.addMouseListener(adapter);
-            categoryLabel.addMouseListener(adapter);
-            priceLabel.addMouseListener(adapter);
-            stockLabel.addMouseListener(adapter);
+                setSelected(true);
+                onSelect.run();
+            }
+
+            public void mouseEntered(MouseEvent e) {
+                hovered = true;
+                applyVisualState();
+            }
+
+            public void mouseExited(MouseEvent e) {
+                hovered = false;
+                applyVisualState();
+            }
+        };
+        installListener(this, adapter);
+    }
+
+    /**
+     * Mỗi component con chỉ gắn một listener — tránh gọi onSelect hai lần mỗi click.
+     */
+    private void installListener(Component component, MouseAdapter adapter) {
+        component.addMouseListener(adapter);
+        if (component instanceof Container) {
+            Container container = (Container) component;
+            for (int i = 0; i < container.getComponentCount(); i++) {
+                installListener(container.getComponent(i), adapter);
+            }
         }
     }
 

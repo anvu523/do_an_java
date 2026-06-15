@@ -55,7 +55,7 @@ public class CategoryManagementPanel extends JPanel {
         saveButton.addActionListener(e -> save());
         JButton deleteButton = UiUtils.dangerButton("Ngừng dùng");
         deleteButton.addActionListener(e -> deactivate());
-        JButton clearButton = UiUtils.secondaryButton("Làm mới");
+        JButton clearButton = UiUtils.secondaryButton("Nhập mới");
         clearButton.addActionListener(e -> clearForm());
         return new FormLayout()
                 .addRow("Tên", nameField)

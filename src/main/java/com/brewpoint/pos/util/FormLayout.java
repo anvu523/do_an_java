@@ -10,8 +10,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 public final class FormLayout {
-    private static final int LABEL_WIDTH = 120;
-
     private final JPanel panel = new JPanel(new GridBagLayout());
     private final GridBagConstraints labelConstraints = new GridBagConstraints();
     private final GridBagConstraints fieldConstraints = new GridBagConstraints();

@@ -1,6 +1,7 @@
 package com.brewpoint.pos.view;
 
 import com.brewpoint.pos.controller.OrderController;
+import com.brewpoint.pos.controller.ReportController;
 import com.brewpoint.pos.model.OrderItemDetail;
 import com.brewpoint.pos.model.OrderSummary;
 import com.brewpoint.pos.model.ToppingSnapshot;
@@ -25,8 +26,10 @@ import java.util.List;
 public class OrderDetailDialog extends JDialog {
     private static final long serialVersionUID = 1L;
 
+    private final long orderId;
+    private final transient ReportController reportController = new ReportController();
     private final DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"Món", "Size", "Topping", "Ghi chú", "SL", "Đơn giá", "Thành tiền"}, 0) {
+            new Object[]{"Món", "Cỡ ly", "Topping", "Ghi chú", "SL", "Đơn giá", "Thành tiền"}, 0) {
         private static final long serialVersionUID = 1L;
 
         public boolean isCellEditable(int row, int column) {
@@ -37,6 +40,7 @@ public class OrderDetailDialog extends JDialog {
 
     public OrderDetailDialog(Window owner, OrderSummary order, OrderController controller) {
         super(owner, "Chi tiết " + order.getOrderCode(), Dialog.ModalityType.APPLICATION_MODAL);
+        this.orderId = order.getOrderId();
         setSize(960, 500);
         setLocationRelativeTo(owner);
         getContentPane().setBackground(UIConstants.BG_PANEL);
@@ -47,10 +51,25 @@ public class OrderDetailDialog extends JDialog {
         content.add(buildInfoPanel(order), BorderLayout.NORTH);
         content.add(new JScrollPane(table), BorderLayout.CENTER);
         add(content, BorderLayout.CENTER);
+        add(buildFooter(), BorderLayout.SOUTH);
+        loadData(order, controller);
+    }
+
+    private JPanel buildFooter() {
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIConstants.SPACING_SM, UIConstants.SPACING_SM));
+        JButton previewButton = UiUtils.secondaryButton("Xem hóa đơn");
+        previewButton.addActionListener(e -> reportController.previewReceipt(orderId, this));
+        JButton printButton = UiUtils.secondaryButton("In hóa đơn");
+        printButton.addActionListener(e -> reportController.printReceipt(orderId, this));
+        JButton exportButton = UiUtils.primaryButton("Xuất PDF");
+        exportButton.addActionListener(e -> reportController.exportReceiptPdf(orderId, this));
         JButton closeButton = UiUtils.secondaryButton("Đóng");
         closeButton.addActionListener(e -> dispose());
-        add(UiUtils.dialogFooter(null, closeButton), BorderLayout.SOUTH);
-        loadData(order, controller);
+        actions.add(previewButton);
+        actions.add(printButton);
+        actions.add(exportButton);
+        actions.add(closeButton);
+        return actions;
     }
 
     private JPanel buildInfoPanel(OrderSummary order) {
@@ -59,7 +78,7 @@ public class OrderDetailDialog extends JDialog {
         info.add(buildInfoLabel("Tổng: " + MoneyUtils.formatVnd(order.getTotalAmount()), true));
         info.add(buildInfoLabel("Thanh toán: " + order.getPaymentMethod().getDisplayName(), false));
         if (order.getReceivedAmount() != null) {
-            info.add(buildInfoLabel("Khách đưa: " + MoneyUtils.formatVnd(order.getReceivedAmount()), false));
+            info.add(buildInfoLabel("Tiền khách đưa: " + MoneyUtils.formatVnd(order.getReceivedAmount()), false));
         }
         if (order.getChangeAmount() != null) {
             info.add(buildInfoLabel("Tiền thừa: " + MoneyUtils.formatVnd(order.getChangeAmount()), false));

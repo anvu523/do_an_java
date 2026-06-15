@@ -6,6 +6,8 @@ import com.brewpoint.pos.controller.CatalogController;
 
 import com.brewpoint.pos.controller.CheckoutController;
 
+import com.brewpoint.pos.controller.ReportController;
+
 import com.brewpoint.pos.model.CartLine;
 
 import com.brewpoint.pos.model.CartLineRequest;
@@ -17,8 +19,6 @@ import com.brewpoint.pos.model.CheckoutRequest;
 import com.brewpoint.pos.model.CheckoutResult;
 
 import com.brewpoint.pos.model.PaymentInput;
-
-import com.brewpoint.pos.model.PaymentMethod;
 
 import com.brewpoint.pos.model.Product;
 
@@ -37,6 +37,8 @@ import com.brewpoint.pos.util.ValidationException;
 
 
 import javax.swing.BorderFactory;
+
+import javax.swing.Box;
 
 import javax.swing.BoxLayout;
 
@@ -104,7 +106,7 @@ public class PosPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String[] CART_HEADERS = new String[]{"Món", "Tùy chọn", "SL", "Đơn giá", "Thành tiền"};
+    private static final String[] CART_HEADERS = new String[]{"Món", "Cỡ & topping", "SL", "Đơn giá", "Thành tiền"};
 
     private static final int[] CART_MIN_COLUMN_WIDTHS = new int[]{90, 150, 40, 95, 105};
 
@@ -113,6 +115,8 @@ public class PosPanel extends JPanel {
     private final transient CatalogController catalogController = new CatalogController();
 
     private final transient CheckoutController checkoutController = new CheckoutController();
+
+    private final transient ReportController reportController = new ReportController();
 
     private final transient ImageService imageService = new ImageService();
 
@@ -146,7 +150,13 @@ public class PosPanel extends JPanel {
 
     private final JTable cartTable = new JTable(cartModel);
 
-    private final JLabel totalLabel = new JLabel("Tổng tiền: 0 ₫", SwingConstants.RIGHT);
+    private final JLabel subtotalLabel = new JLabel("0 ₫", SwingConstants.RIGHT);
+
+    private final JLabel discountLabel = new JLabel("0 ₫", SwingConstants.RIGHT);
+
+    private final JPanel discountRow = new JPanel(new BorderLayout());
+
+    private final JLabel paymentTotalLabel = new JLabel("0 ₫", SwingConstants.RIGHT);
 
     private final transient List<CartLine> cartLines = new ArrayList<CartLine>();
 
@@ -155,6 +165,8 @@ public class PosPanel extends JPanel {
     private boolean splitDividerInitialized;
 
     private boolean processingCheckout;
+
+    private boolean optionDialogOpen;
 
 
 
@@ -274,13 +286,14 @@ public class PosPanel extends JPanel {
 
         searchRow.setOpaque(false);
 
-        JLabel searchLabel = new JLabel("Tìm");
+        JLabel searchLabel = new JLabel("Tìm món");
 
         UiUtils.styleLabel(searchLabel);
 
         searchRow.add(searchLabel);
 
         UiUtils.styleField(searchField);
+        UiUtils.installPlaceholder(searchField, "VD: trà sữa");
 
         searchField.setPreferredSize(new Dimension(220, UIConstants.FORM_FIELD_HEIGHT));
 
@@ -290,13 +303,7 @@ public class PosPanel extends JPanel {
 
         searchButton.addActionListener(e -> loadProducts());
 
-        JButton reloadButton = UiUtils.secondaryButton("Tải lại");
-
-        reloadButton.addActionListener(e -> loadProducts());
-
         searchRow.add(searchButton);
-
-        searchRow.add(reloadButton);
 
         top.add(filterRow);
 
@@ -342,7 +349,7 @@ public class PosPanel extends JPanel {
 
         cartTable.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
 
-        cartTable.setToolTipText("Double-click để sửa món");
+        cartTable.setToolTipText("Đúp chuột để sửa món");
 
         cartTable.addMouseListener(new MouseAdapter() {
 
@@ -382,11 +389,7 @@ public class PosPanel extends JPanel {
 
                 UIConstants.SPACING_SM, UIConstants.SPACING_SM));
 
-        totalLabel.setFont(UIConstants.fontBold(UIConstants.FONT_TOTAL));
-
-        totalLabel.setForeground(UIConstants.PRIMARY);
-
-        bottom.add(totalLabel, BorderLayout.NORTH);
+        bottom.add(buildCartTotalsPanel(), BorderLayout.NORTH);
 
 
 
@@ -417,6 +420,74 @@ public class PosPanel extends JPanel {
         panel.add(bottom, BorderLayout.SOUTH);
 
         return panel;
+
+    }
+
+
+
+    private JPanel buildCartTotalsPanel() {
+
+        JPanel totals = new JPanel();
+
+        totals.setLayout(new BoxLayout(totals, BoxLayout.Y_AXIS));
+
+        totals.setOpaque(false);
+
+        totals.add(buildTotalRow("Tổng tiền hàng", subtotalLabel, false));
+
+        discountRow.setLayout(new BorderLayout());
+
+        discountRow.setOpaque(false);
+
+        discountRow.add(buildTotalRow("Giảm giá", discountLabel, false), BorderLayout.CENTER);
+
+        discountRow.setVisible(false);
+
+        totals.add(discountRow);
+
+        totals.add(Box.createVerticalStrut(UIConstants.SPACING_SM));
+
+        totals.add(buildTotalRow("Tổng thanh toán", paymentTotalLabel, true));
+
+        return totals;
+
+    }
+
+
+
+    private JPanel buildTotalRow(String caption, JLabel valueLabel, boolean emphasize) {
+
+        JPanel row = new JPanel(new BorderLayout(UIConstants.SPACING_SM, 0));
+
+        row.setOpaque(false);
+
+        JLabel captionLabel = new JLabel(caption);
+
+        captionLabel.setFont(emphasize ? UIConstants.fontBold(UIConstants.FONT_LABEL)
+
+                : UIConstants.font(UIConstants.FONT_LABEL));
+
+        captionLabel.setForeground(emphasize ? UIConstants.TEXT_PRIMARY : UIConstants.TEXT_MUTED);
+
+        if (emphasize) {
+
+            valueLabel.setFont(UIConstants.fontBold(UIConstants.FONT_TOTAL));
+
+            valueLabel.setForeground(UIConstants.PRIMARY);
+
+        } else {
+
+            valueLabel.setFont(UIConstants.font(UIConstants.FONT_LABEL));
+
+            valueLabel.setForeground(UIConstants.TEXT_PRIMARY);
+
+        }
+
+        row.add(captionLabel, BorderLayout.WEST);
+
+        row.add(valueLabel, BorderLayout.EAST);
+
+        return row;
 
     }
 
@@ -490,7 +561,7 @@ public class PosPanel extends JPanel {
 
         Integer categoryId = selected == null || selected.getCategoryId() == 0 ? null : Integer.valueOf(selected.getCategoryId());
 
-        String keyword = searchField.getText();
+        String keyword = UiUtils.readFieldText(searchField);
 
         productCards.clear();
 
@@ -658,6 +729,11 @@ public class PosPanel extends JPanel {
 
     private void openOptionDialog(Product product) {
 
+        if (optionDialogOpen) {
+            return;
+        }
+        optionDialogOpen = true;
+
         try {
 
             ProductOptionDialog dialog = new ProductOptionDialog(
@@ -684,7 +760,7 @@ public class PosPanel extends JPanel {
 
                 }
 
-                addOrMerge(checkoutController.previewLine(request));
+                addToCart(checkoutController.previewLine(request));
 
             }
 
@@ -694,6 +770,7 @@ public class PosPanel extends JPanel {
 
         } finally {
 
+            optionDialogOpen = false;
             clearCardSelection();
 
         }
@@ -750,27 +827,7 @@ public class PosPanel extends JPanel {
 
 
 
-    private void addOrMerge(CartLine newLine) throws SQLException {
-
-        String newKey = newLine.getRequest().cartKey();
-
-        for (int i = 0; i < cartLines.size(); i++) {
-
-            CartLine existing = cartLines.get(i);
-
-            if (existing.getRequest().cartKey().equals(newKey)) {
-
-                existing.getRequest().setQuantity(existing.getRequest().getQuantity() + newLine.getRequest().getQuantity());
-
-                cartLines.set(i, checkoutController.previewLine(existing.getRequest()));
-
-                fillCart();
-
-                return;
-
-            }
-
-        }
+    private void addToCart(CartLine newLine) {
 
         cartLines.add(newLine);
 
@@ -806,7 +863,17 @@ public class PosPanel extends JPanel {
 
         }
 
-        totalLabel.setText("Tổng tiền: " + MoneyUtils.formatVnd(total));
+        BigDecimal discount = BigDecimal.ZERO;
+
+        BigDecimal paymentTotal = total.subtract(discount);
+
+        subtotalLabel.setText(MoneyUtils.formatVnd(total));
+
+        discountLabel.setText(MoneyUtils.formatVnd(discount));
+
+        paymentTotalLabel.setText(MoneyUtils.formatVnd(paymentTotal));
+
+        discountRow.setVisible(discount.signum() > 0);
 
     }
 
@@ -922,9 +989,9 @@ public class PosPanel extends JPanel {
 
                 }
 
-                cartLines.remove(modelRow);
+                cartLines.set(modelRow, checkoutController.previewLine(updated));
 
-                addOrMerge(checkoutController.previewLine(updated));
+                fillCart();
 
             }
 
@@ -940,7 +1007,7 @@ public class PosPanel extends JPanel {
 
     private void clearCartWithConfirm() {
 
-        if (cartLines.isEmpty() || UiUtils.confirm(this, "Xóa toàn bộ giỏ hàng?")) {
+        if (cartLines.isEmpty() || UiUtils.confirm(this, "Bạn muốn xóa hết món trong giỏ?")) {
 
             cartLines.clear();
 
@@ -1018,13 +1085,27 @@ public class PosPanel extends JPanel {
 
             CheckoutResult result = checkoutController.checkout(request);
 
-            UiUtils.showInfo(this, buildCheckoutSuccessMessage(result, paymentInput));
+            CheckoutSuccessDialog successDialog = new CheckoutSuccessDialog(
 
-            cartLines.clear();
+                    SwingUtilities.getWindowAncestor(this),
 
-            fillCart();
+                    result,
 
-            loadProducts();
+                    paymentInput,
+
+                    reportController,
+
+                    new Runnable() {
+
+                        public void run() {
+
+                            startNewOrder();
+
+                        }
+
+                    });
+
+            successDialog.setVisible(true);
 
         } catch (SQLException | RuntimeException ex) {
 
@@ -1038,12 +1119,18 @@ public class PosPanel extends JPanel {
 
     }
 
-    private String buildCheckoutSuccessMessage(CheckoutResult result, PaymentInput paymentInput) {
-        String base = "Đã lưu hóa đơn " + result.getOrderCode() + ".";
-        if (paymentInput != null && paymentInput.getMethod() == PaymentMethod.CASH) {
-            return base + " Tiền thừa: " + MoneyUtils.formatVnd(result.getChangeAmount());
-        }
-        return base + " Thanh toán chuyển khoản thành công.";
+
+
+    private void startNewOrder() {
+
+        cartLines.clear();
+
+        fillCart();
+
+        loadProducts();
+
+        searchField.requestFocusInWindow();
+
     }
 
 }

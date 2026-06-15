@@ -77,18 +77,19 @@ public class MainFrame extends JFrame {
     }
 
     private JPanel buildMenu() {
-        JPanel menu = new JPanel(new GridLayout(12, 1, 0, UIConstants.SPACING_SM));
+        JPanel menu = new JPanel(new GridLayout(13, 1, 0, UIConstants.SPACING_SM));
         menu.setPreferredSize(new Dimension(UIConstants.SIDEBAR_WIDTH, 0));
         menu.setBorder(BorderFactory.createEmptyBorder(UIConstants.SPACING_MD, UIConstants.SPACING_SM,
                 UIConstants.SPACING_MD, UIConstants.SPACING_SM));
         menu.setBackground(UIConstants.BG_SIDEBAR);
         addMenuButton(menu, "Bán hàng", "pos", true);
-        addMenuButton(menu, "Hóa đơn", "orders", true);
+        addMenuButton(menu, "Lịch sử hóa đơn", "orders", true);
         addMenuButton(menu, "Danh mục", "categories", isAdmin());
         addMenuButton(menu, "Sản phẩm", "products", isAdmin());
         addMenuButton(menu, "Topping bổ sung", "toppings", isAdmin());
         addMenuButton(menu, "Nhân viên", "employees", isAdmin());
-        addMenuButton(menu, "Thống kê", "statistics", isAdmin());
+        addMenuButton(menu, "Báo cáo in/PDF", "reports", isAdmin());
+        addMenuButton(menu, "Tổng quan ngày", "statistics", isAdmin());
         JButton logoutButton = UiUtils.dangerButton("Đăng xuất");
         logoutButton.addActionListener(e -> {
             dispose();
@@ -125,6 +126,7 @@ public class MainFrame extends JFrame {
         contentPanel.add(new ProductManagementPanel(), "products");
         contentPanel.add(new ToppingManagementPanel(), "toppings");
         contentPanel.add(new EmployeeManagementPanel(currentUser.getUserId()), "employees");
+        contentPanel.add(new ReportsPanel(), "reports");
         contentPanel.add(new StatisticsPanel(), "statistics");
     }
 

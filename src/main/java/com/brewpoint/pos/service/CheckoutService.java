@@ -123,7 +123,7 @@ public class CheckoutService {
         }
         ProductSize size = sizeDAO.findById(connection, request.getProductSizeId(), true);
         if (size == null || size.getProductId() != product.getProductId()) {
-            throw new ValidationException("Size không hợp lệ cho sản phẩm đã chọn.");
+            throw new ValidationException("Cỡ ly không còn bán. Vui lòng chọn lại.");
         }
         List<Integer> toppingIds = uniqueToppingIds(request.getToppingIds());
         request.setToppingIds(toppingIds);

@@ -39,7 +39,7 @@ import java.math.BigDecimal;
 public class PaymentDialog extends JDialog {
     private static final long serialVersionUID = 1L;
     private static final int DIALOG_WIDTH = 540;
-    private static final int DETAILS_MIN_HEIGHT = 300;
+    private static final int DETAILS_MIN_HEIGHT = 340;
     private static final BigDecimal[] QUICK_AMOUNTS = new BigDecimal[]{
             new BigDecimal("50000"),
             new BigDecimal("100000"),
@@ -52,6 +52,7 @@ public class PaymentDialog extends JDialog {
     private final JRadioButton transferRadio = new JRadioButton("Chuyển khoản");
     private final JTextField receivedField = new JTextField(14);
     private final JLabel changeLabel = new JLabel("0 ₫", SwingConstants.RIGHT);
+    private final JCheckBox cashConfirmedBox = new JCheckBox("Đã nhận đủ tiền");
     private final JCheckBox transferConfirmedBox = new JCheckBox("Đã nhận đủ tiền chuyển khoản");
     private final JPanel cashPanel = new JPanel();
     private final JPanel transferPanel = new JPanel();
@@ -67,13 +68,13 @@ public class PaymentDialog extends JDialog {
         add(buildContent(), BorderLayout.CENTER);
         javax.swing.JButton cancelButton = UiUtils.secondaryButton("Hủy");
         cancelButton.addActionListener(e -> dispose());
-        javax.swing.JButton confirmButton = UiUtils.primaryButton("Xác nhận");
+        javax.swing.JButton confirmButton = UiUtils.primaryButton("Hoàn tất thanh toán");
         confirmButton.addActionListener(e -> accept());
         add(UiUtils.dialogFooter(cancelButton, confirmButton), BorderLayout.SOUTH);
         wirePaymentMethodToggle();
         setReceivedAmount(total);
         updatePaymentMethodUi();
-        setMinimumSize(new Dimension(DIALOG_WIDTH, 460));
+        setMinimumSize(new Dimension(DIALOG_WIDTH, 480));
         pack();
         setLocationRelativeTo(owner);
     }
@@ -86,7 +87,7 @@ public class PaymentDialog extends JDialog {
         JPanel wrapper = new JPanel(new BorderLayout());
         UiUtils.styleDialogContent(wrapper);
 
-        JLabel totalLabel = new JLabel("Tổng tiền: " + MoneyUtils.formatVnd(total));
+        JLabel totalLabel = new JLabel("Tổng thanh toán: " + MoneyUtils.formatVnd(total));
         totalLabel.setFont(UIConstants.fontBold(UIConstants.FONT_TOTAL));
         totalLabel.setForeground(UIConstants.PRIMARY);
         totalLabel.setBorder(new EmptyBorder(0, 0, UIConstants.SPACING_SM, 0));
@@ -121,6 +122,7 @@ public class PaymentDialog extends JDialog {
                 formatReceivedField();
             }
         });
+        cashConfirmedBox.setFont(UIConstants.font(UIConstants.FONT_LABEL));
         transferConfirmedBox.setFont(UIConstants.font(UIConstants.FONT_LABEL));
 
         changeLabel.setFont(UIConstants.fontBold(UIConstants.FONT_TOTAL));
@@ -138,6 +140,12 @@ public class PaymentDialog extends JDialog {
         cashPanel.add(cashForm);
         cashPanel.add(Box.createVerticalStrut(UIConstants.SPACING_MD));
         cashPanel.add(buildQuickAmountPanel());
+        cashPanel.add(Box.createVerticalStrut(UIConstants.SPACING_SM));
+        JPanel cashConfirmRow = new JPanel(new BorderLayout());
+        cashConfirmRow.setOpaque(false);
+        cashConfirmRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cashConfirmRow.add(cashConfirmedBox, BorderLayout.WEST);
+        cashPanel.add(cashConfirmRow);
 
         transferPanel.setLayout(new BoxLayout(transferPanel, BoxLayout.Y_AXIS));
         transferPanel.setOpaque(false);
@@ -175,7 +183,7 @@ public class PaymentDialog extends JDialog {
         steps.add(buildGuideStep("2", "Chụp ảnh bill chuyển tiền của khách để đối chiếu khi cần."));
         steps.add(Box.createVerticalStrut(UIConstants.SPACING_SM));
         steps.add(buildGuideStep("3", "Kiểm tra đã nhận đủ " + amountText
-                + ", tick xác nhận bên dưới rồi bấm Xác nhận."));
+                + ", tick xác nhận bên dưới rồi bấm Hoàn tất thanh toán."));
 
         JPanel panel = UiUtils.sectionPanel("Hướng dẫn thu ngân", steps);
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -252,6 +260,9 @@ public class PaymentDialog extends JDialog {
     private void updatePaymentMethodUi() {
         CardLayout layout = (CardLayout) paymentDetailsPanel.getLayout();
         layout.show(paymentDetailsPanel, cashRadio.isSelected() ? "cash" : "transfer");
+        if (cashRadio.isSelected()) {
+            updateChangePreview();
+        }
         pack();
         setLocationRelativeTo(getOwner());
     }
@@ -288,16 +299,29 @@ public class PaymentDialog extends JDialog {
         if (received == null) {
             changeLabel.setText("—");
             changeLabel.setForeground(UIConstants.TEXT_MUTED);
+            cashConfirmedBox.setSelected(false);
+            cashConfirmedBox.setEnabled(false);
+            cashConfirmedBox.setText("Đã nhận đủ tiền");
             return;
         }
         BigDecimal change = received.subtract(total);
         if (change.signum() < 0) {
             changeLabel.setText("Chưa đủ " + MoneyUtils.formatVnd(change.abs()));
             changeLabel.setForeground(UIConstants.DANGER);
+            cashConfirmedBox.setSelected(false);
+            cashConfirmedBox.setEnabled(false);
+            cashConfirmedBox.setText("Đã nhận đủ tiền");
             return;
         }
         changeLabel.setText(MoneyUtils.formatVnd(change));
         changeLabel.setForeground(UIConstants.PRIMARY);
+        cashConfirmedBox.setSelected(false);
+        cashConfirmedBox.setEnabled(true);
+        if (change.signum() > 0) {
+            cashConfirmedBox.setText("Đã nhận đủ tiền và trả tiền thừa cho khách");
+        } else {
+            cashConfirmedBox.setText("Đã nhận đủ tiền");
+        }
     }
 
     private BigDecimal tryParseReceived() {
@@ -320,6 +344,13 @@ public class PaymentDialog extends JDialog {
                 received = ValidationUtils.parseNonNegativeMoney(receivedField.getText(), "Tiền khách đưa");
                 if (received.compareTo(total) < 0) {
                     throw new ValidationException("Số tiền khách đưa chưa đủ.");
+                }
+                if (!cashConfirmedBox.isSelected()) {
+                    BigDecimal change = received.subtract(total);
+                    if (change.signum() > 0) {
+                        throw new ValidationException("Vui lòng xác nhận đã nhận đủ tiền và trả tiền thừa cho khách.");
+                    }
+                    throw new ValidationException("Vui lòng xác nhận đã nhận đủ tiền.");
                 }
             } else if (!transferConfirmedBox.isSelected()) {
                 throw new ValidationException("Phải xác nhận đã nhận tiền chuyển khoản.");
