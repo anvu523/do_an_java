@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.YearMonth;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -24,23 +24,27 @@ class BestSellingProductsReportServiceTest extends AbstractReportTest {
 
     @Test
     void build_withProductStats_generatesReport() throws Exception {
-        when(reportDataSource.loadBestSellingProducts(YearMonth.of(2026, 6))).thenReturn(Arrays.asList(
+        LocalDate start = LocalDate.of(2026, 6, 1);
+        LocalDate end = LocalDate.of(2026, 6, 30);
+        when(reportDataSource.loadBestSellingProducts(start, end)).thenReturn(Arrays.asList(
                 new ProductSalesStat("Trà sữa trân châu đường đen", 180, new BigDecimal("8100000")),
                 new ProductSalesStat("Trà đào cam sả", 145, new BigDecimal("5800000")),
                 new ProductSalesStat("Bạc xỉu", 120, new BigDecimal("3840000"))
         ));
 
-        JasperPrint print = new BestSellingProductsReportService(reportDataSource).build(2026, 6);
+        JasperPrint print = new BestSellingProductsReportService(reportDataSource).build(start, end, "Tháng 06/2026");
 
         assertNotNull(print);
     }
 
     @Test
     void build_withEmptyDataset_generatesReport() throws Exception {
-        when(reportDataSource.loadBestSellingProducts(YearMonth.of(2026, 5)))
+        LocalDate start = LocalDate.of(2026, 5, 1);
+        LocalDate end = LocalDate.of(2026, 5, 31);
+        when(reportDataSource.loadBestSellingProducts(start, end))
                 .thenReturn(Collections.<ProductSalesStat>emptyList());
 
-        JasperPrint print = new BestSellingProductsReportService(reportDataSource).build(2026, 5);
+        JasperPrint print = new BestSellingProductsReportService(reportDataSource).build(start, end, "Tháng 05/2026");
 
         assertNotNull(print);
     }

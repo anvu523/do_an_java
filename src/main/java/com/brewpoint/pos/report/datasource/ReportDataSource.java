@@ -46,6 +46,10 @@ public class ReportDataSource {
         return reportDAO.dailyRevenue(date);
     }
 
+    public DailyRevenueMetrics loadDailyRevenue(LocalDate startDate, LocalDate endDate) throws SQLException {
+        return reportDAO.dailyRevenue(startDate, endDate);
+    }
+
     public List<MonthlyRevenueDayRow> loadMonthlyRevenueDays(int year, int month) throws SQLException {
         return reportDAO.monthlyRevenueByDay(year, month);
     }
@@ -54,12 +58,12 @@ public class ReportDataSource {
         return reportDAO.monthlyRevenueTotal(year, month);
     }
 
-    public List<ProductSalesStat> loadBestSellingProducts(YearMonth yearMonth) throws SQLException {
-        return reportDAO.bestSellingProducts(yearMonth);
+    public List<ProductSalesStat> loadBestSellingProducts(LocalDate startDate, LocalDate endDate) throws SQLException {
+        return reportDAO.bestSellingProducts(startDate, endDate);
     }
 
-    public List<CashierPerformanceRow> loadCashierPerformance(YearMonth yearMonth) throws SQLException {
-        return reportDAO.cashierPerformance(yearMonth);
+    public List<CashierPerformanceRow> loadCashierPerformance(LocalDate startDate, LocalDate endDate) throws SQLException {
+        return reportDAO.cashierPerformance(startDate, endDate);
     }
 
     private String buildOptions(OrderItemDetail detail) {

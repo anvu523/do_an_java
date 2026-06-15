@@ -33,4 +33,18 @@ public class DailyRevenueReportService extends AbstractJasperReportService {
         LocalDate safeDate = date == null ? LocalDate.now() : date;
         return "DailyRevenue_" + safeDate + ".pdf";
     }
+
+    public JasperPrint build(LocalDate startDate, LocalDate endDate) throws SQLException, JRException {
+        ReportParameterBuilder.validateReportDate(startDate);
+        ReportParameterBuilder.validateReportDate(endDate);
+        DailyRevenueMetrics metrics = reportDataSource.loadDailyRevenue(startDate, endDate);
+        Map<String, Object> parameters = ReportParameterBuilder.dailyRevenue(metrics, startDate, endDate);
+        return fill(ReportTemplate.DAILY_REVENUE, parameters);
+    }
+
+    public String defaultPdfName(LocalDate startDate, LocalDate endDate) {
+        LocalDate safeStart = startDate == null ? LocalDate.now() : startDate;
+        LocalDate safeEnd = endDate == null ? LocalDate.now() : endDate;
+        return "DailyRevenue_" + safeStart + "_to_" + safeEnd + ".pdf";
+    }
 }

@@ -52,6 +52,20 @@ public class ReportDAO {
         }
     }
 
+    public DailyRevenueMetrics dailyRevenue(LocalDate startDate, LocalDate endDate) throws SQLException {
+        LocalDate safeStart = startDate == null ? LocalDate.now() : startDate;
+        LocalDate safeEnd = endDate == null ? LocalDate.now() : endDate;
+        try (Connection connection = DatabaseManager.getInstance().getConnection()) {
+            BigDecimal revenue = revenueForDateRange(connection, safeStart, safeEnd);
+            int orderCount = orderCountForDateRange(connection, safeStart, safeEnd);
+            BigDecimal average = BigDecimal.ZERO;
+            if (orderCount > 0) {
+                average = revenue.divide(BigDecimal.valueOf(orderCount), 0, RoundingMode.HALF_UP);
+            }
+            return new DailyRevenueMetrics(safeStart, revenue, orderCount, average);
+        }
+    }
+
     public List<MonthlyRevenueDayRow> monthlyRevenueByDay(int year, int month) throws SQLException {
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate start = yearMonth.atDay(1);
@@ -97,9 +111,10 @@ public class ReportDAO {
         return BigDecimal.ZERO;
     }
 
-    public List<ProductSalesStat> bestSellingProducts(YearMonth yearMonth) throws SQLException {
-        LocalDate start = yearMonth.atDay(1);
-        LocalDate end = yearMonth.plusMonths(1).atDay(1);
+    public List<ProductSalesStat> bestSellingProducts(LocalDate startDate, LocalDate endDate) throws SQLException {
+        LocalDate start = startDate == null ? LocalDate.now() : startDate;
+        LocalDate end = endDate == null ? LocalDate.now() : endDate;
+        LocalDate exclusiveEnd = end.plusDays(1);
         String sql = "SELECT oi.product_name_snapshot, SUM(oi.quantity) AS qty, SUM(oi.line_total) AS revenue "
                 + "FROM order_items oi JOIN orders o ON o.order_id = oi.order_id "
                 + "WHERE o.status = 'COMPLETED' AND o.order_time >= ? AND o.order_time < ? "
@@ -107,7 +122,7 @@ public class ReportDAO {
         try (Connection connection = DatabaseManager.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setDate(1, Date.valueOf(start));
-            statement.setDate(2, Date.valueOf(end));
+            statement.setDate(2, Date.valueOf(exclusiveEnd));
             try (ResultSet resultSet = statement.executeQuery()) {
                 List<ProductSalesStat> stats = new ArrayList<ProductSalesStat>();
                 while (resultSet.next()) {
@@ -122,9 +137,10 @@ public class ReportDAO {
         }
     }
 
-    public List<CashierPerformanceRow> cashierPerformance(YearMonth yearMonth) throws SQLException {
-        LocalDate start = yearMonth.atDay(1);
-        LocalDate end = yearMonth.plusMonths(1).atDay(1);
+    public List<CashierPerformanceRow> cashierPerformance(LocalDate startDate, LocalDate endDate) throws SQLException {
+        LocalDate start = startDate == null ? LocalDate.now() : startDate;
+        LocalDate end = endDate == null ? LocalDate.now() : endDate;
+        LocalDate exclusiveEnd = end.plusDays(1);
         String sql = "SELECT e.full_name, COUNT(o.order_id) AS order_count, COALESCE(SUM(o.total_amount), 0) AS revenue "
                 + "FROM orders o JOIN employees e ON e.employee_id = o.employee_id "
                 + "WHERE o.status = 'COMPLETED' AND o.order_time >= ? AND o.order_time < ? "
@@ -132,7 +148,7 @@ public class ReportDAO {
         try (Connection connection = DatabaseManager.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setDate(1, Date.valueOf(start));
-            statement.setDate(2, Date.valueOf(end));
+            statement.setDate(2, Date.valueOf(exclusiveEnd));
             try (ResultSet resultSet = statement.executeQuery()) {
                 List<CashierPerformanceRow> rows = new ArrayList<CashierPerformanceRow>();
                 while (resultSet.next()) {
@@ -165,6 +181,35 @@ public class ReportDAO {
         String sql = "SELECT COUNT(*) AS total FROM orders WHERE status = 'COMPLETED' AND DATE(order_time) = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setDate(1, Date.valueOf(date));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("total");
+                }
+            }
+        }
+        return 0;
+    }
+
+    private BigDecimal revenueForDateRange(Connection connection, LocalDate start, LocalDate end) throws SQLException {
+        String sql = "SELECT COALESCE(SUM(total_amount), 0) AS revenue FROM orders "
+                + "WHERE status = 'COMPLETED' AND DATE(order_time) >= ? AND DATE(order_time) <= ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setDate(1, Date.valueOf(start));
+            statement.setDate(2, Date.valueOf(end));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getBigDecimal("revenue");
+                }
+            }
+        }
+        return BigDecimal.ZERO;
+    }
+
+    private int orderCountForDateRange(Connection connection, LocalDate start, LocalDate end) throws SQLException {
+        String sql = "SELECT COUNT(*) AS total FROM orders WHERE status = 'COMPLETED' AND DATE(order_time) >= ? AND DATE(order_time) <= ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setDate(1, Date.valueOf(start));
+            statement.setDate(2, Date.valueOf(end));
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return resultSet.getInt("total");

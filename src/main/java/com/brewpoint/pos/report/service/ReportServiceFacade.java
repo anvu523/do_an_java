@@ -29,6 +29,14 @@ public class ReportServiceFacade {
         return dailyRevenueReportService.defaultPdfName(date);
     }
 
+    public JasperPrint dailyRevenue(LocalDate startDate, LocalDate endDate) throws SQLException, JRException {
+        return dailyRevenueReportService.build(startDate, endDate);
+    }
+
+    public String dailyRevenuePdfName(LocalDate startDate, LocalDate endDate) {
+        return dailyRevenueReportService.defaultPdfName(startDate, endDate);
+    }
+
     public JasperPrint monthlyRevenue(int year, int month) throws SQLException, JRException {
         return monthlyRevenueReportService.build(year, month);
     }
@@ -37,19 +45,19 @@ public class ReportServiceFacade {
         return monthlyRevenueReportService.defaultPdfName(year, month);
     }
 
-    public JasperPrint bestSellingProducts(int year, int month) throws SQLException, JRException {
-        return bestSellingProductsReportService.build(year, month);
+    public JasperPrint bestSellingProducts(LocalDate startDate, LocalDate endDate, String periodDesc) throws SQLException, JRException {
+        return bestSellingProductsReportService.build(startDate, endDate, periodDesc);
     }
 
-    public String bestSellingProductsPdfName(int year, int month) {
-        return bestSellingProductsReportService.defaultPdfName(year, month);
+    public String bestSellingProductsPdfName(LocalDate startDate, LocalDate endDate) {
+        return bestSellingProductsReportService.defaultPdfName(startDate, endDate);
     }
 
-    public JasperPrint cashierPerformance(int year, int month) throws SQLException, JRException {
-        return cashierPerformanceReportService.build(year, month);
+    public JasperPrint cashierPerformance(LocalDate startDate, LocalDate endDate, String periodDesc) throws SQLException, JRException {
+        return cashierPerformanceReportService.build(startDate, endDate, periodDesc);
     }
 
-    public String cashierPerformancePdfName(int year, int month) {
-        return cashierPerformanceReportService.defaultPdfName(year, month);
+    public String cashierPerformancePdfName(LocalDate startDate, LocalDate endDate) {
+        return cashierPerformanceReportService.defaultPdfName(startDate, endDate);
     }
 }

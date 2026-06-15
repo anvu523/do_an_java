@@ -7,7 +7,10 @@ import com.brewpoint.pos.util.MoneyUtils;
 import com.brewpoint.pos.util.UIConstants;
 import com.brewpoint.pos.util.UiUtils;
 
+import com.brewpoint.pos.controller.EmployeeController;
+import com.brewpoint.pos.model.Employee;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -25,10 +28,12 @@ public class OrderHistoryPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private final transient OrderController controller = new OrderController();
+    private final transient EmployeeController employeeController = new EmployeeController();
     private final boolean admin;
     private final Integer employeeId;
     private final JTextField codeField = new JTextField(14);
     private final JTextField dateField = new JTextField(10);
+    private final JComboBox<Object> cashierCombo = new JComboBox<Object>();
     private final DefaultTableModel model = new DefaultTableModel(
             new Object[]{"Mã hóa đơn", "Thu ngân", "Thời gian", "Thanh toán", "Tổng", "Trạng thái"}, 0) {
         private static final long serialVersionUID = 1L;
@@ -65,11 +70,32 @@ public class OrderHistoryPanel extends JPanel {
         UiUtils.styleCompactField(dateField);
         row.add(dateField);
 
+        if (admin) {
+            row.add(UiUtils.formLabel("Thu ngân"));
+            cashierCombo.setFont(UIConstants.font(UIConstants.FONT_INPUT));
+            cashierCombo.setPreferredSize(new java.awt.Dimension(180, java.lang.Math.max(UIConstants.FORM_FIELD_HEIGHT, 30)));
+            row.add(cashierCombo);
+            loadCashiers();
+        }
+
         JButton searchButton = UiUtils.primaryButton("Tìm kiếm");
         searchButton.addActionListener(e -> loadData());
         row.add(searchButton);
 
         return UiUtils.wrapFormCard(row);
+    }
+
+    private void loadCashiers() {
+        try {
+            cashierCombo.removeAllItems();
+            cashierCombo.addItem("Tất cả thu ngân");
+            List<Employee> list = employeeController.findAll();
+            for (Employee emp : list) {
+                cashierCombo.addItem(emp);
+            }
+        } catch (SQLException ex) {
+            UiUtils.showError(this, ex);
+        }
     }
 
     private JPanel buildBottom() {
@@ -83,7 +109,15 @@ public class OrderHistoryPanel extends JPanel {
     private void loadData() {
         try {
             LocalDate date = parseDate();
-            Integer filterEmployeeId = admin ? null : employeeId;
+            Integer filterEmployeeId = null;
+            if (admin) {
+                Object selected = cashierCombo.getSelectedItem();
+                if (selected instanceof Employee) {
+                    filterEmployeeId = ((Employee) selected).getEmployeeId();
+                }
+            } else {
+                filterEmployeeId = employeeId;
+            }
             orders.clear();
             orders.addAll(controller.search(codeField.getText(), date, filterEmployeeId));
             model.setRowCount(0);

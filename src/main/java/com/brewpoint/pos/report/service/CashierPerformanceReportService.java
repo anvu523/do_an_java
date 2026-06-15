@@ -10,7 +10,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 
 import java.sql.SQLException;
-import java.time.YearMonth;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,10 +26,8 @@ public class CashierPerformanceReportService extends AbstractJasperReportService
         this.reportDataSource = reportDataSource;
     }
 
-    public JasperPrint build(int year, int month) throws SQLException, JRException {
-        ReportParameterBuilder.validateMonth(year, month);
-        YearMonth yearMonth = YearMonth.of(year, month);
-        List<CashierPerformanceRow> rawRows = reportDataSource.loadCashierPerformance(yearMonth);
+    public JasperPrint build(LocalDate startDate, LocalDate endDate, String periodDesc) throws SQLException, JRException {
+        List<CashierPerformanceRow> rawRows = reportDataSource.loadCashierPerformance(startDate, endDate);
         List<CashierPerformanceReportRow> rows = new ArrayList<CashierPerformanceReportRow>();
         for (CashierPerformanceRow row : rawRows) {
             rows.add(new CashierPerformanceReportRow(
@@ -38,11 +36,13 @@ public class CashierPerformanceReportService extends AbstractJasperReportService
                     ReportFormatUtils.money(row.getRevenue())
             ));
         }
-        Map<String, Object> parameters = ReportParameterBuilder.cashierPerformance(yearMonth);
+        Map<String, Object> parameters = ReportParameterBuilder.cashierPerformance(periodDesc);
         return fill(ReportTemplate.CASHIER_PERFORMANCE, parameters, rows);
     }
 
-    public String defaultPdfName(int year, int month) {
-        return String.format("CashierPerformance_%04d-%02d.pdf", Integer.valueOf(year), Integer.valueOf(month));
+    public String defaultPdfName(LocalDate startDate, LocalDate endDate) {
+        LocalDate safeStart = startDate == null ? LocalDate.now() : startDate;
+        LocalDate safeEnd = endDate == null ? java.time.LocalDate.now() : endDate;
+        return "CashierPerformance_" + safeStart + "_to_" + safeEnd + ".pdf";
     }
 }

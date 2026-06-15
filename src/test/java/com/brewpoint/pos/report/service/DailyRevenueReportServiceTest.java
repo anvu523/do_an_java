@@ -65,4 +65,27 @@ class DailyRevenueReportServiceTest extends AbstractReportTest {
         String name = new DailyRevenueReportService(reportDataSource).defaultPdfName(LocalDate.of(2026, 6, 15));
         assertTrue(name.contains("DailyRevenue_2026-06-15.pdf"));
     }
+
+    @Test
+    void build_withRangeValidData_generatesReport() throws Exception {
+        LocalDate start = LocalDate.of(2026, 6, 15);
+        LocalDate end = LocalDate.of(2026, 6, 20);
+        when(reportDataSource.loadDailyRevenue(start, end)).thenReturn(new DailyRevenueMetrics(
+                start,
+                new BigDecimal("1890000"),
+                50,
+                new BigDecimal("37800")
+        ));
+
+        JasperPrint print = new DailyRevenueReportService(reportDataSource).build(start, end);
+
+        assertNotNull(print);
+        assertTrue(print.getPages().size() > 0);
+    }
+
+    @Test
+    void defaultPdfName_withRange_usesRangeDates() {
+        String name = new DailyRevenueReportService(reportDataSource).defaultPdfName(LocalDate.of(2026, 6, 15), LocalDate.of(2026, 6, 20));
+        assertTrue(name.contains("DailyRevenue_2026-06-15_to_2026-06-20.pdf"));
+    }
 }

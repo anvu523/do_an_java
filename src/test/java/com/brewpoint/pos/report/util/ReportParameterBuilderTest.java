@@ -117,8 +117,8 @@ class ReportParameterBuilderTest {
     }
 
     @Test
-    void bestSellingProducts_requiresYearMonth() {
-        Map<String, Object> parameters = ReportParameterBuilder.bestSellingProducts(YearMonth.of(2026, 5));
+    void bestSellingProducts_requiresPeriodDesc() {
+        Map<String, Object> parameters = ReportParameterBuilder.bestSellingProducts("Tháng 05/2026");
         assertTrue(parameters.get("REPORT_TITLE").toString().contains("bán chạy"));
     }
 }

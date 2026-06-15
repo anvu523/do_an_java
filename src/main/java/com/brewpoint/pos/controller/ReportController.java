@@ -86,6 +86,31 @@ public class ReportController {
         });
     }
 
+    public void previewDailyRevenue(LocalDate startDate, LocalDate endDate, Component parent) {
+        run(parent, "Không xem được báo cáo.", new ReportAction() {
+            public void run() throws Exception {
+                jasperReportExporter.preview(reportService.dailyRevenue(startDate, endDate), "Doanh thu khoảng ngày", parent);
+            }
+        });
+    }
+
+    public void printDailyRevenue(LocalDate startDate, LocalDate endDate, Component parent) {
+        run(parent, "Không in được báo cáo.", new ReportAction() {
+            public void run() throws Exception {
+                jasperReportExporter.print(reportService.dailyRevenue(startDate, endDate), parent);
+            }
+        });
+    }
+
+    public void exportDailyRevenue(LocalDate startDate, LocalDate endDate, ReportExportStrategy strategy, Component parent) {
+        String ext = strategy.getExtension().toUpperCase();
+        run(parent, "Không xuất báo cáo " + ext + ".", new ReportAction() {
+            public void run() throws Exception {
+                exportReport(parent, reportService.dailyRevenue(startDate, endDate), reportService.dailyRevenuePdfName(startDate, endDate), strategy);
+            }
+        });
+    }
+
     public void previewMonthlyRevenue(int year, int month, Component parent) {
         run(parent, "Không xem được báo cáo.", new ReportAction() {
             public void run() throws Exception {
@@ -112,54 +137,54 @@ public class ReportController {
         });
     }
 
-    public void previewBestSellingProducts(int year, int month, Component parent) {
+    public void previewBestSellingProducts(LocalDate startDate, LocalDate endDate, String periodDesc, Component parent) {
         run(parent, "Không xem được báo cáo.", new ReportAction() {
             public void run() throws Exception {
-                jasperReportExporter.preview(reportService.bestSellingProducts(year, month), "Sản phẩm bán chạy", parent);
+                jasperReportExporter.preview(reportService.bestSellingProducts(startDate, endDate, periodDesc), "Sản phẩm bán chạy", parent);
             }
         });
     }
 
-    public void printBestSellingProducts(int year, int month, Component parent) {
+    public void printBestSellingProducts(LocalDate startDate, LocalDate endDate, String periodDesc, Component parent) {
         run(parent, "Không in được báo cáo.", new ReportAction() {
             public void run() throws Exception {
-                jasperReportExporter.print(reportService.bestSellingProducts(year, month), parent);
+                jasperReportExporter.print(reportService.bestSellingProducts(startDate, endDate, periodDesc), parent);
             }
         });
     }
 
-    public void exportBestSellingProducts(int year, int month, ReportExportStrategy strategy, Component parent) {
+    public void exportBestSellingProducts(LocalDate startDate, LocalDate endDate, String periodDesc, ReportExportStrategy strategy, Component parent) {
         String ext = strategy.getExtension().toUpperCase();
         run(parent, "Không xuất báo cáo " + ext + ".", new ReportAction() {
             public void run() throws Exception {
-                exportReport(parent, reportService.bestSellingProducts(year, month),
-                        reportService.bestSellingProductsPdfName(year, month), strategy);
+                exportReport(parent, reportService.bestSellingProducts(startDate, endDate, periodDesc),
+                        reportService.bestSellingProductsPdfName(startDate, endDate), strategy);
             }
         });
     }
 
-    public void previewCashierPerformance(int year, int month, Component parent) {
+    public void previewCashierPerformance(LocalDate startDate, LocalDate endDate, String periodDesc, Component parent) {
         run(parent, "Không xem được báo cáo.", new ReportAction() {
             public void run() throws Exception {
-                jasperReportExporter.preview(reportService.cashierPerformance(year, month), "Doanh thu từng thu ngân", parent);
+                jasperReportExporter.preview(reportService.cashierPerformance(startDate, endDate, periodDesc), "Doanh thu từng thu ngân", parent);
             }
         });
     }
 
-    public void printCashierPerformance(int year, int month, Component parent) {
+    public void printCashierPerformance(LocalDate startDate, LocalDate endDate, String periodDesc, Component parent) {
         run(parent, "Không in được báo cáo.", new ReportAction() {
             public void run() throws Exception {
-                jasperReportExporter.print(reportService.cashierPerformance(year, month), parent);
+                jasperReportExporter.print(reportService.cashierPerformance(startDate, endDate, periodDesc), parent);
             }
         });
     }
 
-    public void exportCashierPerformance(int year, int month, ReportExportStrategy strategy, Component parent) {
+    public void exportCashierPerformance(LocalDate startDate, LocalDate endDate, String periodDesc, ReportExportStrategy strategy, Component parent) {
         String ext = strategy.getExtension().toUpperCase();
         run(parent, "Không xuất báo cáo " + ext + ".", new ReportAction() {
             public void run() throws Exception {
-                exportReport(parent, reportService.cashierPerformance(year, month),
-                        reportService.cashierPerformancePdfName(year, month), strategy);
+                exportReport(parent, reportService.cashierPerformance(startDate, endDate, periodDesc),
+                        reportService.cashierPerformancePdfName(startDate, endDate), strategy);
             }
         });
     }

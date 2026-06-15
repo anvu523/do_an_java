@@ -31,6 +31,20 @@ public final class ReportParameterBuilder {
         return parameters;
     }
 
+    public static Map<String, Object> dailyRevenue(DailyRevenueMetrics metrics, LocalDate startDate, LocalDate endDate) {
+        if (metrics == null) {
+            throw new IllegalArgumentException("Dữ liệu báo cáo ngày không hợp lệ.");
+        }
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("REPORT_TITLE", "Báo cáo doanh thu theo khoảng ngày");
+        parameters.put("GENERATED_AT", ReportFormatUtils.generatedAt());
+        parameters.put("REPORT_DATE", ReportFormatUtils.date(startDate) + " - " + ReportFormatUtils.date(endDate));
+        parameters.put("TOTAL_REVENUE", ReportFormatUtils.money(metrics.getTotalRevenue()));
+        parameters.put("ORDER_COUNT", String.valueOf(metrics.getOrderCount()));
+        parameters.put("AVERAGE_ORDER", ReportFormatUtils.money(metrics.getAverageOrderValue()));
+        return parameters;
+    }
+
     public static Map<String, Object> monthlyRevenue(int year, int month, BigDecimal totalRevenue) {
         validateMonth(year, month);
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -41,25 +55,25 @@ public final class ReportParameterBuilder {
         return parameters;
     }
 
-    public static Map<String, Object> bestSellingProducts(YearMonth yearMonth) {
-        if (yearMonth == null) {
-            throw new IllegalArgumentException("Tháng báo cáo không hợp lệ.");
+    public static Map<String, Object> bestSellingProducts(String periodDesc) {
+        if (periodDesc == null || periodDesc.trim().isEmpty()) {
+            throw new IllegalArgumentException("Kỳ báo cáo không hợp lệ.");
         }
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("REPORT_TITLE", "Báo cáo sản phẩm bán chạy");
         parameters.put("GENERATED_AT", ReportFormatUtils.generatedAt());
-        parameters.put("REPORT_MONTH", ReportFormatUtils.monthYear(yearMonth));
+        parameters.put("REPORT_MONTH", periodDesc);
         return parameters;
     }
 
-    public static Map<String, Object> cashierPerformance(YearMonth yearMonth) {
-        if (yearMonth == null) {
-            throw new IllegalArgumentException("Tháng báo cáo không hợp lệ.");
+    public static Map<String, Object> cashierPerformance(String periodDesc) {
+        if (periodDesc == null || periodDesc.trim().isEmpty()) {
+            throw new IllegalArgumentException("Kỳ báo cáo không hợp lệ.");
         }
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("REPORT_TITLE", "Báo cáo doanh thu từng thu ngân");
         parameters.put("GENERATED_AT", ReportFormatUtils.generatedAt());
-        parameters.put("REPORT_MONTH", ReportFormatUtils.monthYear(yearMonth));
+        parameters.put("REPORT_MONTH", periodDesc);
         return parameters;
     }
 

@@ -44,7 +44,7 @@ public class ProductManagementPanel extends JPanel {
     private final JTextField codeField = new JTextField(12);
     private final JTextField nameField = new JTextField(18);
     private final JTextField stockField = new JTextField("0", 6);
-    private final JTextField imagePathField = new JTextField(22);
+    private String imagePath = "";
     private final JComboBox<Category> categoryCombo = new JComboBox<Category>();
     private final JCheckBox activeBox = new JCheckBox("Đang bán", true);
     private final JLabel previewLabel = new JLabel();
@@ -66,7 +66,6 @@ public class ProductManagementPanel extends JPanel {
         UiUtils.styleField(codeField);
         UiUtils.styleField(nameField);
         UiUtils.styleField(stockField);
-        UiUtils.styleField(imagePathField);
         categoryCombo.setFont(UIConstants.font(UIConstants.FONT_INPUT));
         categoryCombo.setPreferredSize(new java.awt.Dimension(220, UIConstants.FORM_FIELD_HEIGHT));
         activeBox.setFont(UIConstants.font(UIConstants.FONT_LABEL));
@@ -79,7 +78,7 @@ public class ProductManagementPanel extends JPanel {
         chooseButton.addActionListener(e -> chooseImage());
         JButton removeImageButton = UiUtils.dangerButton("Xóa ảnh");
         removeImageButton.addActionListener(e -> {
-            imagePathField.setText("");
+            imagePath = "";
             previewLabel.setIcon(imageService.placeholder(160, 120));
         });
         imageRow.add(chooseButton);
@@ -99,7 +98,6 @@ public class ProductManagementPanel extends JPanel {
                 .addRow("Tên sản phẩm", nameField)
                 .addRow("Danh mục", categoryCombo)
                 .addRow("Tồn kho", stockField)
-                .addRow("Đường dẫn ảnh", imagePathField)
                 .addFullWidth(activeBox)
                 .addFullWidth(imageRow)
                 .build();
@@ -149,10 +147,10 @@ public class ProductManagementPanel extends JPanel {
         codeField.setText(product.getProductCode());
         nameField.setText(product.getName());
         stockField.setText(String.valueOf(product.getStockQuantity()));
-        imagePathField.setText(product.getImagePath() == null ? "" : product.getImagePath());
+        imagePath = product.getImagePath() == null ? "" : product.getImagePath();
         activeBox.setSelected(product.getStatus().isActive());
         selectCategory(product.getCategoryId());
-        previewLabel.setIcon(imageService.loadThumbnail(product.getImagePath(), 160, 120));
+        previewLabel.setIcon(imageService.loadThumbnail(imagePath, 160, 120));
     }
 
     private void selectCategory(int categoryId) {
@@ -171,7 +169,7 @@ public class ProductManagementPanel extends JPanel {
             try {
                 File file = chooser.getSelectedFile();
                 String path = imageService.copyProductImage(file);
-                imagePathField.setText(path);
+                imagePath = path;
                 previewLabel.setIcon(imageService.loadThumbnail(path, 160, 120));
             } catch (RuntimeException ex) {
                 UiUtils.showError(this, ex);
@@ -187,7 +185,7 @@ public class ProductManagementPanel extends JPanel {
             product.setProductCode(codeField.getText());
             product.setName(nameField.getText());
             product.setCategoryId(category == null ? 0 : category.getCategoryId());
-            product.setImagePath(imagePathField.getText());
+            product.setImagePath(imagePath);
             product.setStockQuantity(ValidationUtils.requireNonNegativeInt(stockField.getText(), "Tồn kho"));
             product.setStatus(activeBox.isSelected() ? ProductStatus.ACTIVE : ProductStatus.INACTIVE);
             if (selectedId > 0) {
@@ -231,7 +229,7 @@ public class ProductManagementPanel extends JPanel {
         codeField.setText("");
         nameField.setText("");
         stockField.setText("0");
-        imagePathField.setText("");
+        imagePath = "";
         activeBox.setSelected(true);
         previewLabel.setIcon(imageService.placeholder(160, 120));
         if (categoryCombo.getItemCount() > 0) {

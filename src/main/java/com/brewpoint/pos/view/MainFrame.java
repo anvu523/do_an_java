@@ -83,12 +83,12 @@ public class MainFrame extends JFrame {
                 UIConstants.SPACING_MD, UIConstants.SPACING_SM));
         menu.setBackground(UIConstants.BG_SIDEBAR);
         addMenuButton(menu, "Bán hàng", "pos", true);
-        addMenuButton(menu, "Lịch sử hóa đơn", "orders", true);
+        addMenuButton(menu, "Hóa đơn", "orders", true);
         addMenuButton(menu, "Danh mục", "categories", isAdmin());
         addMenuButton(menu, "Sản phẩm", "products", isAdmin());
         addMenuButton(menu, "Topping bổ sung", "toppings", isAdmin());
         addMenuButton(menu, "Nhân viên", "employees", isAdmin());
-        addMenuButton(menu, "Báo cáo in/PDF", "reports", isAdmin());
+        addMenuButton(menu, "Báo cáo", "reports", isAdmin());
         addMenuButton(menu, "Tổng quan ngày", "statistics", isAdmin());
         JButton logoutButton = UiUtils.dangerButton("Đăng xuất");
         logoutButton.addActionListener(e -> {

@@ -23,7 +23,7 @@ public class CategoryManagementPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private final transient CatalogController controller = new CatalogController();
-    private final DefaultTableModel model = new DefaultTableModel(new Object[]{"Mã", "Tên", "Thứ tự", "Trạng thái"}, 0) {
+    private final DefaultTableModel model = new DefaultTableModel(new Object[]{"Mã", "Tên", "Thứ tự hiển thị", "Trạng thái"}, 0) {
         private static final long serialVersionUID = 1L;
 
         public boolean isCellEditable(int row, int column) {
@@ -59,7 +59,7 @@ public class CategoryManagementPanel extends JPanel {
         clearButton.addActionListener(e -> clearForm());
         return new FormLayout()
                 .addRow("Tên", nameField)
-                .addRow("Thứ tự", orderField)
+                .addRow("Thứ tự hiển thị", orderField)
                 .addFullWidth(activeBox)
                 .buildCard(saveButton, deleteButton, clearButton);
     }
@@ -99,7 +99,7 @@ public class CategoryManagementPanel extends JPanel {
             Category category = new Category();
             category.setCategoryId(selectedId);
             category.setName(nameField.getText());
-            category.setDisplayOrder(ValidationUtils.requireNonNegativeInt(orderField.getText(), "Thứ tự"));
+            category.setDisplayOrder(ValidationUtils.requireNonNegativeInt(orderField.getText(), "Thứ tự hiển thị"));
             category.setActive(activeBox.isSelected());
             if (selectedId > 0) {
                 controller.updateCategory(category);
