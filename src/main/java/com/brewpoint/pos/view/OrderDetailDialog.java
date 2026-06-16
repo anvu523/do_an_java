@@ -61,7 +61,7 @@ public class OrderDetailDialog extends JDialog {
         previewButton.addActionListener(e -> reportController.previewReceipt(orderId, this));
         JButton printButton = UiUtils.secondaryButton("In hóa đơn");
         printButton.addActionListener(e -> reportController.printReceipt(orderId, this));
-        JButton exportButton = UiUtils.primaryButton("Xuất PDF");
+        JButton exportButton = UiUtils.secondaryButton("Xuất PDF");
         exportButton.addActionListener(e -> reportController.exportReceiptPdf(orderId, this));
         JButton closeButton = UiUtils.secondaryButton("Đóng");
         closeButton.addActionListener(e -> dispose());

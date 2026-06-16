@@ -60,6 +60,25 @@ public class ProductManagementPanel extends JPanel {
         add(new JScrollPane(table), BorderLayout.CENTER);
         loadCategories();
         loadData();
+
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent e) {
+                Category selected = (Category) categoryCombo.getSelectedItem();
+                int oldId = selected != null ? selected.getCategoryId() : -1;
+                
+                loadCategories();
+                
+                for (int i = 0; i < categoryCombo.getItemCount(); i++) {
+                    Category cat = categoryCombo.getItemAt(i);
+                    if (cat != null && cat.getCategoryId() == oldId) {
+                        categoryCombo.setSelectedIndex(i);
+                        break;
+                    }
+                }
+                
+                loadData();
+            }
+        });
     }
 
     private JPanel buildForm() {

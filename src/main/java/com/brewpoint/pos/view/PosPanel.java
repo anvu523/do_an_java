@@ -198,6 +198,23 @@ public class PosPanel extends JPanel {
 
             }
 
+            public void componentShown(ComponentEvent e) {
+
+                Category selected = (Category) categoryCombo.getSelectedItem();
+                int oldId = selected != null ? selected.getCategoryId() : -1;
+                
+                loadCategories();
+                
+                for (int i = 0; i < categoryCombo.getItemCount(); i++) {
+                    Category cat = categoryCombo.getItemAt(i);
+                    if (cat != null && cat.getCategoryId() == oldId) {
+                        categoryCombo.setSelectedIndex(i);
+                        break;
+                    }
+                }
+                
+                loadProducts(false);
+            }
         });
 
         productScrollPane.getViewport().addChangeListener(new ChangeListener() {
@@ -1064,16 +1081,19 @@ public class PosPanel extends JPanel {
     }
 
     private void startNewOrder() {
-
+        for (CartLine line : cartLines) {
+            int productId = line.getRequest().getProductId();
+            int qty = line.getRequest().getQuantity();
+            for (ProductCardPanel card : productCards) {
+                if (card.getProduct().getProductId() == productId) {
+                    card.reduceStock(qty);
+                    break;
+                }
+            }
+        }
         cartLines.clear();
-
         fillCart();
-
-        loadProducts(false);
-
         searchField.requestFocusInWindow();
-
     }
 
 }
-

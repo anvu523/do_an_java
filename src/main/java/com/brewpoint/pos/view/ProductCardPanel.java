@@ -28,11 +28,12 @@ public class ProductCardPanel extends JPanel {
     private final ImageService imageService;
     private final Runnable onSelect;
     private final JLabel imageLabel;
-    private final boolean selectable;
+    private boolean selectable;
     private boolean selected;
     private boolean hovered;
     private int imageWidth = UIConstants.CARD_IMAGE_WIDTH;
     private int imageHeight = UIConstants.CARD_IMAGE_HEIGHT;
+    private JPanel infoPanel;
 
     public ProductCardPanel(Product product, ImageService imageService, Runnable onSelect) {
         this.product = product;
@@ -47,7 +48,8 @@ public class ProductCardPanel extends JPanel {
         imageLabel = new JLabel(loadImageIcon(), SwingConstants.CENTER);
         imageLabel.setPreferredSize(new Dimension(imageWidth, imageHeight));
         add(imageLabel, BorderLayout.NORTH);
-        add(buildInfoPanel(), BorderLayout.SOUTH);
+        infoPanel = buildInfoPanel();
+        add(infoPanel, BorderLayout.SOUTH);
 
         if (selectable && onSelect != null) {
             wireSelectionHandlers();
@@ -136,8 +138,28 @@ public class ProductCardPanel extends JPanel {
         applyVisualState();
     }
 
+    public Product getProduct() {
+        return product;
+    }
+
     public void clearSelected() {
         setSelected(false);
+    }
+
+    public void reduceStock(int quantity) {
+        int currentStock = product.getStockQuantity();
+        product.setStockQuantity(currentStock - quantity);
+        selectable = product.getStockQuantity() > 0 && product.getFromPrice() != null;
+        applyVisualState();
+
+        if (infoPanel != null) {
+            remove(infoPanel);
+        }
+        infoPanel = buildInfoPanel();
+        add(infoPanel, BorderLayout.SOUTH);
+
+        revalidate();
+        repaint();
     }
 
     private void applyCardSize(int width, int height) {
