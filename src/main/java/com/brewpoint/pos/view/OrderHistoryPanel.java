@@ -55,6 +55,29 @@ public class OrderHistoryPanel extends JPanel {
         add(new JScrollPane(table), BorderLayout.CENTER);
         add(buildBottom(), BorderLayout.SOUTH);
         loadData();
+        
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent e) {
+                if (admin) {
+                    Object selected = cashierCombo.getSelectedItem();
+                    int oldId = -1;
+                    if (selected instanceof Employee) {
+                        oldId = ((Employee) selected).getEmployeeId();
+                    }
+                    loadCashiers();
+                    if (oldId != -1) {
+                        for (int i = 0; i < cashierCombo.getItemCount(); i++) {
+                            Object item = cashierCombo.getItemAt(i);
+                            if (item instanceof Employee && ((Employee) item).getEmployeeId() == oldId) {
+                                cashierCombo.setSelectedIndex(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+                loadData();
+            }
+        });
     }
 
     private JPanel buildSearch() {

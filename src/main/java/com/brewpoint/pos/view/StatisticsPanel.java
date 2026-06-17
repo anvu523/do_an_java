@@ -51,6 +51,12 @@ public class StatisticsPanel extends JPanel {
         UiUtils.configureTable(table);
         add(new JScrollPane(table), BorderLayout.CENTER);
         loadData();
+        
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent e) {
+                loadData();
+            }
+        });
     }
 
     public StatisticsPanel() {
