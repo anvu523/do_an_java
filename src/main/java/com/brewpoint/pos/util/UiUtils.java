@@ -16,7 +16,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.JTableHeader;
 import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -340,8 +339,8 @@ public final class UiUtils {
         component.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(BORDER),
                 title,
-                javax.swing.border.TitledBorder.LEFT,
-                javax.swing.border.TitledBorder.TOP,
+                TitledBorder.LEFT,
+                TitledBorder.TOP,
                 UIConstants.fontBold(UIConstants.FONT_SECTION_TITLE),
                 UIConstants.TEXT_PRIMARY
         ));

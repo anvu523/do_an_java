@@ -5,7 +5,6 @@ import com.brewpoint.pos.model.Category;
 import com.brewpoint.pos.util.FormLayout;
 import com.brewpoint.pos.util.UIConstants;
 import com.brewpoint.pos.util.UiUtils;
-import com.brewpoint.pos.util.ValidationUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -214,7 +213,6 @@ public class CategoryManagementPanel extends JPanel {
             try {
                 int rowFrom = (Integer) info.getTransferable().getTransferData(localObjectFlavor);
                 if (rowFrom != -1 && rowFrom != index) {
-                    int originalRowFrom = rowFrom;
                     if (index > rowFrom) {
                         index--; 
                     }

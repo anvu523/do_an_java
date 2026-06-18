@@ -15,7 +15,6 @@ public class DependencyContainer {
     private final OrderDAO orderDAO;
     private final ProductDAO productDAO;
     private final ProductSizeDAO productSizeDAO;
-    private final ReportDAO reportDAO;
     private final StatisticDAO statisticDAO;
     private final ToppingDAO toppingDAO;
     private final UserDAO userDAO;
@@ -54,7 +53,6 @@ public class DependencyContainer {
         orderDAO = new OrderDAO();
         productDAO = new ProductDAO();
         productSizeDAO = new ProductSizeDAO();
-        reportDAO = new ReportDAO();
         statisticDAO = new StatisticDAO();
         toppingDAO = new ToppingDAO();
         userDAO = new UserDAO();

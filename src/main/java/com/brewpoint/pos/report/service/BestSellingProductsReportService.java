@@ -37,7 +37,7 @@ public class BestSellingProductsReportService extends AbstractJasperReportServic
 
     public String defaultPdfName(LocalDate startDate, LocalDate endDate) {
         LocalDate safeStart = startDate == null ? LocalDate.now() : startDate;
-        LocalDate safeEnd = endDate == null ? java.time.LocalDate.now() : endDate;
+        LocalDate safeEnd = endDate == null ? LocalDate.now() : endDate;
         return "BestSellingProducts_" + safeStart + "_to_" + safeEnd + ".pdf";
     }
 }

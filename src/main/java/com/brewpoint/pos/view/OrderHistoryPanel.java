@@ -96,7 +96,7 @@ public class OrderHistoryPanel extends JPanel {
         if (admin) {
             row.add(UiUtils.formLabel("Thu ngân"));
             cashierCombo.setFont(UIConstants.font(UIConstants.FONT_INPUT));
-            cashierCombo.setPreferredSize(new java.awt.Dimension(180, java.lang.Math.max(UIConstants.FORM_FIELD_HEIGHT, 30)));
+            cashierCombo.setPreferredSize(new java.awt.Dimension(180, Math.max(UIConstants.FORM_FIELD_HEIGHT, 30)));
             row.add(cashierCombo);
             loadCashiers();
         }

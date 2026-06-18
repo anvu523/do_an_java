@@ -53,7 +53,6 @@ public class ProductOptionDialog extends JDialog {
     private static final int DIALOG_HEIGHT = 760;
 
     private final Product product;
-    private final transient CatalogController catalogController;
     private final transient ImageService imageService = new ImageService();
     private final boolean editMode;
     private final List<ProductSize> sizes = new ArrayList<ProductSize>();
@@ -74,7 +73,6 @@ public class ProductOptionDialog extends JDialog {
                                CartLineRequest initial, boolean editMode) throws SQLException {
         super(owner, editMode ? "Sửa món" : "Chọn món", Dialog.ModalityType.APPLICATION_MODAL);
         this.product = product;
-        this.catalogController = catalogController;
         this.editMode = editMode;
         this.sizes.addAll(catalogController.findSizes(product.getProductId(), true));
         this.toppings.addAll(catalogController.findToppings(true));
