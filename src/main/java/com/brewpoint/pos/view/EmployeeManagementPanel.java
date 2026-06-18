@@ -6,14 +6,17 @@ import com.brewpoint.pos.model.Role;
 import com.brewpoint.pos.util.FormLayout;
 import com.brewpoint.pos.util.UIConstants;
 import com.brewpoint.pos.util.UiUtils;
+import com.brewpoint.pos.util.ValidationException;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
 import java.sql.SQLException;
@@ -35,7 +38,7 @@ public class EmployeeManagementPanel extends JPanel {
     };
     private final JTable table = new JTable(model);
     private final JTextField usernameField = new JTextField(12);
-    private final JTextField passwordField = new JTextField(12);
+    private final JPasswordField passwordField = new JPasswordField(12);
     private final JTextField fullNameField = new JTextField(18);
     private final JTextField phoneField = new JTextField(10);
     private final JTextField emailField = new JTextField(18);
@@ -78,9 +81,27 @@ public class EmployeeManagementPanel extends JPanel {
         resetButton.addActionListener(e -> resetPassword());
         JButton clearButton = UiUtils.secondaryButton("Nhập mới");
         clearButton.addActionListener(e -> clearForm());
+
+        JToggleButton togglePwdBtn = new JToggleButton("Hiện");
+        togglePwdBtn.setFont(UIConstants.font(UIConstants.FONT_LABEL));
+        togglePwdBtn.setFocusable(false);
+        togglePwdBtn.addActionListener(e -> {
+            if (togglePwdBtn.isSelected()) {
+                passwordField.setEchoChar((char) 0);
+                togglePwdBtn.setText("Ẩn");
+            } else {
+                passwordField.setEchoChar('•');
+                togglePwdBtn.setText("Hiện");
+            }
+        });
+        JPanel pwdPanel = new JPanel(new BorderLayout(5, 0));
+        pwdPanel.setOpaque(false);
+        pwdPanel.add(passwordField, BorderLayout.CENTER);
+        pwdPanel.add(togglePwdBtn, BorderLayout.EAST);
+
         return new FormLayout()
                 .addRow("Tên đăng nhập", usernameField)
-                .addRow("Mật khẩu", passwordField)
+                .addRow("Mật khẩu", pwdPanel)
                 .addRow("Họ tên", fullNameField)
                 .addRow("SĐT", phoneField)
                 .addRow("Email", emailField)
@@ -145,6 +166,9 @@ public class EmployeeManagementPanel extends JPanel {
             }
             clearForm();
             loadData();
+        } catch (ValidationException ex) {
+            UiUtils.showError(this, ex);
+            clearForm();
         } catch (SQLException | RuntimeException ex) {
             UiUtils.showError(this, ex);
         }
@@ -158,6 +182,9 @@ public class EmployeeManagementPanel extends JPanel {
         try {
             controller.resetPassword(selectedUserId, passwordField.getText());
             UiUtils.showInfo(this, "Đã đặt lại mật khẩu thành công.");
+        } catch (ValidationException ex) {
+            UiUtils.showError(this, ex);
+            clearForm();
         } catch (SQLException | RuntimeException ex) {
             UiUtils.showError(this, ex);
         }
