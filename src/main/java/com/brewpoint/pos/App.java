@@ -1,4 +1,4 @@
-package com.brewpoint.pos.main;
+package com.brewpoint.pos;
 
 import com.brewpoint.pos.view.LoginFrame;
 import com.brewpoint.pos.report.util.JasperFontBootstrap;

@@ -31,7 +31,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>com.brewpoint.pos.main.App</mainClass>
+                  <mainClass>com.brewpoint.pos.App</mainClass>
                 </transformer>
                 <transformer>
                   <resource>jasperreports_extension.properties</resource>
