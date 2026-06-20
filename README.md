@@ -1,82 +1,63 @@
-# Điểm Bán Hàng (POS) - Đồ Án Công Nghệ Java
+# ĐỒ ÁN MÔN HỌC: CÔNG NGHỆ JAVA
 
-Chào mừng bạn đến với dự án "Hệ thống Quản lý Điểm Bán Hàng (POS)" - một phần mềm quản lý bán lẻ toàn diện được phát triển bằng ngôn ngữ Java 17. Đồ án được thiết kế nghiêm ngặt theo các tiêu chuẩn kiến trúc phần mềm chuyên nghiệp với sự hiện diện của MVC, DAO, và đặc biệt là hệ thống tự thiết kế IoC Container cho Dependency Injection.
+**Tên đề tài:** XÂY DỰNG PHẦN MỀM QUẢN LÝ BÁN HÀNG VÀ THANH TOÁN CHO QUÁN CÀ PHÊ & TRÀ SỮA
 
-## Tính năng nổi bật (Features)
+**Giảng viên hướng dẫn:** THS. SỬ NHẬT HẠ
 
-* **Phân hệ Bán hàng (Point of Sale):** Giao diện cực nhanh hỗ trợ thu ngân lập hóa đơn, tính tổng tiền, bổ sung các kích cỡ (Size) và lựa chọn đồ ăn kèm (Topping). Hệ thống tự tính tiền thừa và xuất hóa đơn định dạng PDF sắc nét.
-* **Quản lý Danh mục với Drag & Drop:** Cải thiện tối đa trải nghiệm người dùng bằng cách áp dụng cơ chế Kéo và Thả trên `JTable` để sắp xếp thứ tự danh mục. Ứng dụng sử dụng Batch Updates của JDBC để đồng bộ thẳng xuống Database một cách mượt mà và trong suốt (không cần bấm Save).
-* **Báo cáo và Thống kê đa dạng:** Sử dụng thư viện JasperReports hỗ trợ xuất báo cáo doanh thu theo nhiều định dạng (Strategy Pattern) như PDF, Excel, Word.
+**Sinh viên thực hiện:**
+- 24730103	TRẦN ĐÌNH HUY
+- 24730135	NGUYỄN NGỌC QUANG
+- 24730150	LÊ THANH TRÚC VI
+- 24730155	VŨ HOÀNG THIÊN ÂN
+- 24730156	DƯƠNG PHƯƠNG ANH
 
-## Kiến trúc Hệ thống (Architecture & Patterns)
-
-Đây là điểm nhấn tạo nên giá trị học thuật cho dự án:
-* **MVC & DAO:** Phân rã mã nguồn thành 4 tầng rõ rệt: View, Controller, Service, DAO.
-* **Dependency Injection (DI):** Áp dụng DI qua Constructor, sử dụng `DependencyContainer` tự xây dựng làm trung tâm IoC (Inversion of Control) thay vì dùng từ khóa `new` tùy tiện.
-* **Object Pool & Proxy Pattern:** Giải quyết hoàn toàn bài toán nghẽn cổ chai mạng bằng cách tạo một Pool Connection (`SimpleConnectionPool`). Ứng dụng `Dynamic Proxy` được sử dụng để chặn các lời gọi `.close()`, tự động trả các kết nối đang mở về hàng đợi thay vì đóng chúng vĩnh viễn.
+**Lớp:** CN1.K2024.2 - IE303.F21.CN1.CNTT
 
 ---
 
-## Cách cài đặt và Vận hành (Getting Started)
+## Hướng dẫn chạy phần mềm
 
-### 1. Chuẩn bị cơ sở dữ liệu (MySQL qua Podman / Docker)
+Để chạy dự án, bạn cần khởi tạo Cơ sở dữ liệu (Database) trước, sau đó mới chạy ứng dụng Java.
 
-Dự án cung cấp sẵn các script tự động để khởi tạo Database với hơn 1.600 đơn hàng demo. Khuyến nghị sử dụng **Podman** (hoặc Docker).
+### Bước 1: Khởi tạo Database (MySQL) bằng Docker hoặc Podman
+Dự án đã cấu hình sẵn file `docker-compose.yml` để dựng MySQL và phpMyAdmin. Quá trình này sẽ **tự động khởi tạo và import** cấu trúc bảng cùng dữ liệu mẫu từ các file SQL nằm trong thư mục `database/` (bao gồm `database/drink_store.sql` và `database/seed_demo_orders.sql`).
 
-**Trên Windows (PowerShell):**
-Bạn chỉ cần chạy script có sẵn, script này sẽ tự động dọn dẹp volume cũ, tạo MySQL container và nạp dữ liệu (seed) vào:
-```powershell
-cd C:\Users\nngocquang\Documents\pos\do_an_java
-.\scripts\reset-db-podman.ps1
-```
+Mở terminal tại thư mục gốc của dự án và chạy một trong các lệnh sau:
 
-Sau khi chạy xong, hãy kiểm tra xem dữ liệu tiếng Việt có bị lỗi font (hiển thị dấu `?`) hay không bằng script sau:
-```powershell
-.\scripts\verify-db-utf8.ps1
-```
-*Kết quả mong đợi: hiển thị đúng chữ "Trà sữa trân châu đường đen" và "UTF-8 OK".*
-
-**Thủ công (Linux / macOS):**
+**Nếu dùng Docker:**
 ```bash
-podman compose down -v
-podman compose up -d
-# Đợi vài phút để MySQL khởi động và nạp tự động file 01_drink_store.sql và 02_seed_demo_orders.sql
+docker-compose up -d
 ```
 
-### 2. Biên dịch và Chạy ứng dụng
-
-Yêu cầu máy tính cài đặt **Java JDK 17** và **Apache Maven**.
-
-Mở terminal tại thư mục gốc của project và chạy lệnh biên dịch tự động để đóng gói thành Fat JAR (Uber-Jar):
+**Nếu dùng Podman:**
 ```bash
-mvn clean package
+podman-compose up -d
 ```
+*(Lưu ý: phpMyAdmin sẽ chạy ở địa chỉ `http://localhost:8080` để bạn tiện quản lý Database nếu cần)*
 
-Sau khi build thành công, chạy ứng dụng từ file `.jar` đã đóng gói nằm trong thư mục `target/`:
+### Bước 2: Chạy ứng dụng Java
+Sau khi Database đã được khởi chạy thành công, bạn tiến hành mở phần mềm bán hàng bằng file `.jar` đã được build sẵn nằm trong thư mục `target/`.
+
+Mở terminal tại thư mục gốc của dự án và chạy:
 ```bash
 java -jar target/brewpoint-pos-1.0.0.jar
 ```
+*(Yêu cầu: Máy tính cần cài đặt sẵn Java 17+)*
 
-> **Ghi chú về file JAR:** Maven Shade Plugin đã được cấu hình để tự động ghi đè tệp `brewpoint-pos-1.0.0.jar` mặc định thành Fat JAR (chứa toàn bộ thư viện). Tệp JAR không chứa thư viện (thin jar) sẽ được đổi tên thành `original-brewpoint-pos-1.0.0.jar`. Do đó, bạn chạy lệnh `java -jar target/brewpoint-pos-1.0.0.jar` là hoàn toàn chính xác!
+---
 
-### 3. Mã nguồn mở & Kiểm thử tự động (Unit Testing)
-Dự án được bảo vệ toàn vẹn bằng bộ **32 Unit Tests** độc lập (tỷ lệ Pass Rate 100%).
-Để chạy toàn bộ bài kiểm tra nhằm xác minh độ an toàn của thuật toán tính tiền:
+## Hướng dẫn tự Build file `.jar` (Tùy chọn)
+
+Nếu muốn tự biên dịch (build) lại dự án từ mã nguồn, bạn cần chuẩn bị môi trường với các công cụ sau:
+
+**Yêu cầu hệ thống:**
+- **Java:** Cài đặt JDK 17
+- **Maven:** Cài đặt Apache Maven (phiên bản 3.6+ hoặc 3.8+ được khuyến nghị)
+
+**Lệnh thực hiện:**
+1. Mở terminal tại thư mục gốc của dự án (nơi chứa file `pom.xml`).
+2. Chạy lệnh sau để build mã nguồn:
 ```bash
-mvn test
+mvn clean package
 ```
-
----
-
-## Tài khoản Demo
-
-| Vai trò | Username | Mật khẩu | Họ tên nhân viên |
-|---|---|---|---|
-| **Quản lý (Admin)** | `admin` | `admin123` | Hệ thống quản trị |
-| **Thu ngân 1** | `cashier01` | `cashier123` | Nguyễn Thị Lan |
-| **Thu ngân 2** | `cashier02` | `cashier123` | Trần Văn Minh |
-| **Thu ngân 3** | `cashier03` | `cashier123` | Lê Hoàng An |
-
----
-
-> 🚀 **Mọi chi tiết kỹ thuật chuyên sâu và các sơ đồ UML (ERD, Sequence Diagram, Class Diagram), vui lòng xem tại thư mục `academic_report`.**
+3. Sau khi chạy xong, kết quả build sẽ là file `target/brewpoint-pos-1.0.0.jar`.
